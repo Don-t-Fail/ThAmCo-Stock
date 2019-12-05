@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThAmCo.Stock.Data;
+using ThAmCo.Stock.Models.Dto;
 
 namespace ThAmCo.Stock.Controllers
 {
@@ -29,7 +30,7 @@ namespace ThAmCo.Stock.Controllers
 
         // GET: api/Stock/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductStock>> Details(int id)
+        public async Task<ActionResult<ProductStockDetailsDto>> Details(int id)
         {
             var productStock = await _context.ProductStocks.FindAsync(id);
 
@@ -38,7 +39,16 @@ namespace ThAmCo.Stock.Controllers
                 return NotFound();
             }
 
-            return productStock;
+            var productPrice = await _context.Prices.FirstOrDefaultAsync(p => p.Id == productStock.PriceId);
+
+            var productDetails = new ProductStockDetailsDto()
+            {
+                ProductID = productStock.ProductId,
+                Stock = productStock.Stock,
+                Price = productPrice.ProductPrice
+            };
+
+            return productDetails;
         }
 
         // PUT: api/Stock/5
