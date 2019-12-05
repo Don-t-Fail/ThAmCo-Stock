@@ -51,6 +51,28 @@ namespace ThAmCo.Stock.Controllers
             return productDetails;
         }
 
+        [HttpGet("PriceHistory/{id}")]
+        public async Task<ActionResult<ProductStockPricingHistoryDto>> PriceHistory(int id)
+        {
+            var productStock = await _context.ProductStocks.FindAsync(id);
+
+            if (productStock == null)
+            {
+                return NotFound();
+            }
+
+            var productPrice = await _context.Prices.Where(p => p.ProductStockId == productStock.ProductId).ToListAsync();
+
+            var productDetails = new ProductStockPricingHistoryDto()
+            {
+                ProductID = productStock.ProductId,
+                Stock = productStock.Stock,
+                Prices = productPrice
+            };
+
+            return productDetails;
+        }
+
         // PUT: api/Stock/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProductStock(int id, ProductStock productStock)
