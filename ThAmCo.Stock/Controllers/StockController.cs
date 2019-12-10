@@ -129,6 +129,11 @@ namespace ThAmCo.Stock.Controllers
             return productStock;
         }
 
+        public async Task<ActionResult<IEnumerable<ProductStock>>> GetLowStock(int? id)
+        {
+
+        }
+
         private bool ProductStockExists(int id)
         {
             return _context.ProductStocks.Any(e => e.Id == id);
