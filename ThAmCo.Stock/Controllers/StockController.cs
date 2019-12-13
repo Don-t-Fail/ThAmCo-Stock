@@ -35,9 +35,7 @@ namespace ThAmCo.Stock.Controllers
             var productStock = await _context.ProductStocks.FindAsync(id);
 
             if (productStock == null)
-            {
                 return NotFound();
-            }
 
             var productPrice = await _context.Prices.FirstOrDefaultAsync(p => p.Id == productStock.PriceId);
 
@@ -57,9 +55,7 @@ namespace ThAmCo.Stock.Controllers
             var productStock = await _context.ProductStocks.FindAsync(id);
 
             if (productStock == null)
-            {
                 return NotFound();
-            }
 
             var productPrice = await _context.Prices.Where(p => p.ProductStockId == productStock.ProductId).ToListAsync();
 
@@ -78,9 +74,7 @@ namespace ThAmCo.Stock.Controllers
         public async Task<IActionResult> PutProductStock(int id, ProductStock productStock)
         {
             if (id != productStock.Id)
-            {
                 return BadRequest();
-            }
 
             _context.Entry(productStock).State = EntityState.Modified;
 
@@ -119,9 +113,7 @@ namespace ThAmCo.Stock.Controllers
         {
             var productStock = await _context.ProductStocks.FindAsync(id);
             if (productStock == null)
-            {
                 return NotFound();
-            }
 
             _context.ProductStocks.Remove(productStock);
             await _context.SaveChangesAsync();
@@ -129,7 +121,7 @@ namespace ThAmCo.Stock.Controllers
             return productStock;
         }
 
-        public async Task<ActionResult<IEnumerable<ProductStock>>> GetLowStock(int? id)
+        public async Task<ActionResult<IEnumerable<ProductStock>>> LowStock(int? id = 15)
         {
 
         }
