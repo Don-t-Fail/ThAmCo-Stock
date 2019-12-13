@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -117,9 +117,9 @@ namespace ThAmCo.Stock.Controllers
             return productStock;
         }
 
-        public async Task<ActionResult<IEnumerable<ProductStock>>> LowStock(int? id = 15)
+        public async Task<ActionResult<IEnumerable<ProductStock>>> Low(int? id = 15)
         {
-
+            return View();
         }
 
         private bool ProductStockExists(int id)
