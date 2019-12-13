@@ -85,13 +85,9 @@ namespace ThAmCo.Stock.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!ProductStockExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
