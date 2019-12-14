@@ -10,9 +10,9 @@ using ThAmCo.Stock.Models.Dto;
 
 namespace ThAmCo.Stock.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
-    public class StockController : ControllerBase
+    public class StockController : Controller
     {
         private readonly StockDbContext _context;
 
@@ -35,9 +35,7 @@ namespace ThAmCo.Stock.Controllers
             var productStock = await _context.ProductStocks.FindAsync(id);
 
             if (productStock == null)
-            {
                 return NotFound();
-            }
 
             var productPrice = await _context.Prices.FirstOrDefaultAsync(p => p.Id == productStock.PriceId);
 
@@ -57,9 +55,7 @@ namespace ThAmCo.Stock.Controllers
             var productStock = await _context.ProductStocks.FindAsync(id);
 
             if (productStock == null)
-            {
                 return NotFound();
-            }
 
             var productPrice = await _context.Prices.Where(p => p.ProductStockId == productStock.ProductId).ToListAsync();
 
@@ -78,9 +74,7 @@ namespace ThAmCo.Stock.Controllers
         public async Task<IActionResult> PutProductStock(int id, ProductStock productStock)
         {
             if (id != productStock.Id)
-            {
                 return BadRequest();
-            }
 
             _context.Entry(productStock).State = EntityState.Modified;
 
@@ -91,13 +85,9 @@ namespace ThAmCo.Stock.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!ProductStockExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
@@ -119,14 +109,20 @@ namespace ThAmCo.Stock.Controllers
         {
             var productStock = await _context.ProductStocks.FindAsync(id);
             if (productStock == null)
-            {
                 return NotFound();
-            }
 
             _context.ProductStocks.Remove(productStock);
             await _context.SaveChangesAsync();
 
             return productStock;
+        }
+
+        [HttpGet("low/{count}")]
+        public async Task<ActionResult<IEnumerable<ProductStock>>> Low(int? count)
+        {
+            var listToCount = await _context.ProductStocks.OrderBy(ps => ps.Stock).Take(count ?? 15).ToListAsync();
+
+            return View(listToCount);
         }
 
         private bool ProductStockExists(int id)
