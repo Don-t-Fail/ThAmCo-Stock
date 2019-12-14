@@ -117,9 +117,11 @@ namespace ThAmCo.Stock.Controllers
             return productStock;
         }
 
-        public async Task<ActionResult<IEnumerable<ProductStock>>> Low(int? id = 15)
+        public async Task<ActionResult<IEnumerable<ProductStock>>> Low(int? count = 15)
         {
-            return View();
+            var listToCount = await _context.ProductStocks.OrderBy(ps => ps.Stock).Take(count ?? 15).ToListAsync();
+
+            return View(listToCount);
         }
 
         private bool ProductStockExists(int id)
