@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -117,7 +117,8 @@ namespace ThAmCo.Stock.Controllers
             return productStock;
         }
 
-        public async Task<ActionResult<IEnumerable<ProductStock>>> Low(int? count = 15)
+        [HttpGet("low/{count}")]
+        public async Task<ActionResult<IEnumerable<ProductStock>>> Low(int? count)
         {
             var listToCount = await _context.ProductStocks.OrderBy(ps => ps.Stock).Take(count ?? 15).ToListAsync();
 
