@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace ThAmCo.Stock.Controllers
     public class StockController : Controller
     {
         private readonly StockDbContext _context;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public StockController(StockDbContext context)
+        public StockController(StockDbContext context, IHttpClientFactory httpClientFactory)
         {
             _context = context;
+            _clientFactory = httpClientFactory;
         }
 
         // GET: api/Stock
