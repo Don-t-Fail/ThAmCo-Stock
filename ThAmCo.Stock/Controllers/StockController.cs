@@ -26,7 +26,7 @@ namespace ThAmCo.Stock.Controllers
 
         // GET: api/Stock
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductStock>>> GetProductStocks()
+        public async Task<ActionResult<IEnumerable<ProductStock>>> GetProductStock()
         {
             return await _context.ProductStocks.ToListAsync();
         }
@@ -89,8 +89,7 @@ namespace ThAmCo.Stock.Controllers
             {
                 if (!ProductStockExists(id))
                     return NotFound();
-                else
-                    throw;
+                throw;
             }
 
             return NoContent();
