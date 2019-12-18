@@ -1,0 +1,21 @@
+version: '{branch}-{build}'
+build_cloud: 'HetznerWin'
+image: 'Windows'
+branches:
+  only:
+    - master
+    - develop
+dotnet_csproj:
+  patch: true
+  file: 'ThAmCo.Stock\ThAmCo.Stock.csproj'
+  version: '0.0.{build}'
+before_build:
+  - cmd: dotnet --info
+build:
+  project: 'ThAmCo.Stock.sln'
+  parallel: true
+  verbosity: minimal
+test:
+  assemblies:
+    except:
+      - 'build\**\*'
