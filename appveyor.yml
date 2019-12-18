@@ -11,7 +11,7 @@ dotnet_csproj:
   version: '0.0.{build}'
 before_build:
   - cmd: dotnet --info
-build:
+build_script:
   - cmd: dotnet build ThAmCo.Stock.sln
 test:
   assemblies:
