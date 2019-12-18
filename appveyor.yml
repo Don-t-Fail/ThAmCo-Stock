@@ -12,9 +12,7 @@ dotnet_csproj:
 before_build:
   - cmd: dotnet --info
 build:
-  project: 'ThAmCo.Stock.sln'
-  parallel: true
-  verbosity: minimal
+  - cmd dotnet build ThAmCo.Stock.sln
 test:
   assemblies:
     except:
