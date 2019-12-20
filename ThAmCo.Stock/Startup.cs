@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using ThAmCo.Stock.Data;
+using ThAmCo.Stock.Data.StockContext;
 
 namespace ThAmCo.Stock
 {
@@ -47,6 +48,8 @@ namespace ThAmCo.Stock
                         .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
                 .AddTransientHttpErrorPolicy(p =>
                     p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+
+            services.AddScoped<IStockContext, StockContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
