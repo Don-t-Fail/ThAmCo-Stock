@@ -41,12 +41,12 @@ namespace ThAmCo.Stock.Controllers
             if (productStock == null)
                 return NotFound();
 
-            return new ProductStockDetailsDto
+            return Ok(new ProductStockDetailsDto
             {
                 ProductID = productStock.ProductStock.ProductId,
                 Stock = productStock.ProductStock.Stock,
                 Price = productStock.Price.ProductPrice
-            };
+            });
         }
 
         [HttpGet("PriceHistory/{id}")]
