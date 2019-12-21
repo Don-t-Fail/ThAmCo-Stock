@@ -73,5 +73,25 @@ namespace ThAmCo.Stock.Tests.Controllers
             var listResult = enumerableResult.ToList();
             Assert.AreEqual(listResult.Count, 0);
         }
+
+        [TestMethod]
+        public async Task GetDetails_ValidIdPassed_CorrectAndValidObjectReturned()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var controller = new StockController(context, null);
+            const int id = 2;
+
+            var result = await controller.Details(id);
+            
+            Assert.IsNotNull(result);
+            var objectResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(objectResult);
+            var returnedResult = objectResult.Value as ProductStockDetailsDto;
+            Assert.IsNotNull(returnedResult);
+            
+            Assert.AreEqual(returnedResult.ProductID, Data.ProductStocks()[id - 1].ProductId);
+            Assert.AreEqual(returnedResult.Price, Data.Prices().FirstOrDefault( p => p.Id == Data.ProductStocks()[id - 1].PriceId)?.ProductPrice);
+            Assert.AreEqual(returnedResult.Stock, Data.ProductStocks()[id - 1].Stock);
+        }
     }
 }
