@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -152,6 +152,19 @@ namespace ThAmCo.Stock.Tests.Controllers
                 Assert.AreEqual(prices.ProductStockId, validPrices.FirstOrDefault(p => p.Id == prices.Id)?.ProductStockId);
             }
         }
-        
+
+        [TestMethod]
+        public async Task PriceHistory_OutOfBoundsPositiveId_NotFoundReturned()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var controller = new StockController(context, null);
+            const int id = OutOfBoundsId;
+
+            var result = await controller.PriceHistory(id);
+
+            Assert.IsNotNull(result);
+            var objectResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
     }
 }
