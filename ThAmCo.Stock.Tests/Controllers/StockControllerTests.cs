@@ -93,5 +93,19 @@ namespace ThAmCo.Stock.Tests.Controllers
             Assert.AreEqual(returnedResult.Price, Data.Prices().FirstOrDefault( p => p.Id == Data.ProductStocks()[id - 1].PriceId)?.ProductPrice);
             Assert.AreEqual(returnedResult.Stock, Data.ProductStocks()[id - 1].Stock);
         }
+        
+        [TestMethod]
+        public async Task GetDetails_OutOfBoundsId_NotFoundReturned()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var controller = new StockController(context, null);
+            const int id = 4;
+
+            var result = await controller.Details(id);
+            
+            Assert.IsNotNull(result);
+            var objectResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
     }
 }
