@@ -69,7 +69,7 @@ namespace ThAmCo.Stock.Controllers
                 Prices = productPrices
             };
 
-            return productDetails;
+            return Ok(productDetails);
         }
 
         // PUT: api/Stock/5
