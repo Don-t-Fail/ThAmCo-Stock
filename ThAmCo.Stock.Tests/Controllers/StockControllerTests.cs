@@ -95,11 +95,25 @@ namespace ThAmCo.Stock.Tests.Controllers
         }
         
         [TestMethod]
-        public async Task GetDetails_OutOfBoundsId_NotFoundReturned()
+        public async Task GetDetails_OutOfBoundsPositiveId_NotFoundReturned()
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
             const int id = 4;
+
+            var result = await controller.Details(id);
+            
+            Assert.IsNotNull(result);
+            var objectResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
+        
+        [TestMethod]
+        public async Task GetDetails_OutOfBoundsNegativeId_NotFoundReturned()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var controller = new StockController(context, null);
+            const int id = -1;
 
             var result = await controller.Details(id);
             
