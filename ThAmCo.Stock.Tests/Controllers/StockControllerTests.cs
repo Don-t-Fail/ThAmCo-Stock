@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +28,9 @@ namespace ThAmCo.Stock.Tests.Controllers
                 new Price { Id = 3, ProductStockId = 2, ProductPrice = 19.99 }
             };
         }
+        
+        private const int OutOfBoundsId = 4;
+        private const int NegativeId = -1;
         
         [TestMethod]
         public async Task GetAll_AllValid_AllReturned()
@@ -99,7 +102,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
-            const int id = 4;
+            const int id = OutOfBoundsId;
 
             var result = await controller.Details(id);
             
@@ -113,7 +116,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
-            const int id = -1;
+            const int id = NegativeId;
 
             var result = await controller.Details(id);
             
