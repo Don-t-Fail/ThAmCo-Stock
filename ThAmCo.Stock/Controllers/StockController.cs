@@ -36,6 +36,9 @@ namespace ThAmCo.Stock.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductStockDetailsDto>> Details(int id)
         {
+            if (id < 0)
+                return NotFound();
+            
             var productStock = await _context.GetProductStockAsync(id);
 
             if (productStock == null)
