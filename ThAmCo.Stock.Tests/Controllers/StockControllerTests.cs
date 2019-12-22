@@ -121,5 +121,34 @@ namespace ThAmCo.Stock.Tests.Controllers
             var objectResult = result.Result as NotFoundResult;
             Assert.IsNotNull(objectResult);
         }
+
+        [TestMethod]
+        public async Task PriceHistory_ValidIdPassed_CorrectAndValidObjectReturned()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var controller = new StockController(context, null);
+            const int id = 1;
+
+            var result = await controller.PriceHistory(id);
+            var validPrices = Data.Prices().Where(p => p.ProductStockId == id).ToList();
+            
+            Assert.IsNotNull(result);
+            var objectResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(objectResult);
+            var returnedResult = objectResult.Value as ProductStockPricingHistoryDto;
+            Assert.IsNotNull(returnedResult);
+            
+            Assert.AreEqual(returnedResult.ProductID, Data.ProductStocks()[id - 1].ProductId);
+            Assert.AreEqual(returnedResult.Stock, Data.ProductStocks()[id - 1].Stock);
+            Assert.AreEqual(returnedResult.Prices.Count, validPrices.Count);
+            foreach (var prices in returnedResult.Prices)
+            {
+                Assert.AreEqual(prices.Id, validPrices.FirstOrDefault(p => p.Id == prices.Id)?.Id);
+                Assert.AreEqual(prices.Date, validPrices.FirstOrDefault(p => p.Id == prices.Id)?.Date);
+                Assert.AreEqual(prices.ProductPrice, validPrices.FirstOrDefault(p => p.Id == prices.Id)?.ProductPrice);
+                Assert.AreEqual(prices.ProductStockId, validPrices.FirstOrDefault(p => p.Id == prices.Id)?.ProductStockId);
+            }
+        }
+        
     }
 }
