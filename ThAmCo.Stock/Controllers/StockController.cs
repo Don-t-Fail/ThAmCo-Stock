@@ -55,6 +55,9 @@ namespace ThAmCo.Stock.Controllers
         [HttpGet("PriceHistory/{id}")]
         public async Task<ActionResult<ProductStockPricingHistoryDto>> PriceHistory(int id)
         {
+            if (id < 0)
+                return NotFound();
+            
             var productStock = await _context.GetProductStockAsync(id);
 
             if (productStock == null)
