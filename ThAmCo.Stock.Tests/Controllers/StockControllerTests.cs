@@ -166,5 +166,19 @@ namespace ThAmCo.Stock.Tests.Controllers
             var objectResult = result.Result as NotFoundResult;
             Assert.IsNotNull(objectResult);
         }
+        
+        [TestMethod]
+        public async Task PriceHistory_OutOfBoundsNegativeId_NotFoundReturned()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var controller = new StockController(context, null);
+            const int id = NegativeId;
+
+            var result = await controller.PriceHistory(id);
+
+            Assert.IsNotNull(result);
+            var objectResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
     }
 }
