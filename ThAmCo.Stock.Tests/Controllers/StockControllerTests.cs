@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -202,6 +202,38 @@ namespace ThAmCo.Stock.Tests.Controllers
             Assert.IsNotNull(result);
             var objectResult = result.Result as NotFoundResult;
             Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task Low_ValidCountPassedLowerThanDefault_CorrectAndValidObjectReturned()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var controller = new StockController(context, null);
+            const int count = 4;
+
+            var result = controller.Low(count);
+            var expectedResult = Data.ProductStockDtos().OrderBy(ps => ps.ProductStock.Stock).Take(count).ToList();
+            
+            Assert.IsNotNull(result);
+            var priceResult = result.Result as ViewResult;
+            Assert.IsNotNull(priceResult);
+            var objectResult = priceResult.Model as IEnumerable<ProductStockDto>;
+            Assert.IsNotNull(objectResult);
+            var returnedListResult = objectResult.ToList();
+            Assert.AreEqual(returnedListResult.Count, count);
+
+            for (int i = 0; i < count; i++)
+            {
+                Assert.AreEqual(returnedListResult[i].Price.Date, expectedResult[i].Price.Date);
+                Assert.AreEqual(returnedListResult[i].Price.Id, expectedResult[i].Price.Id);
+                Assert.AreEqual(returnedListResult[i].Price.ProductPrice, expectedResult[i].Price.ProductPrice);
+                Assert.AreEqual(returnedListResult[i].Price.ProductStockId, expectedResult[i].Price.ProductStockId);
+                
+                Assert.AreEqual(returnedListResult[i].ProductStock.Id, expectedResult[i].ProductStock.Id);
+                Assert.AreEqual(returnedListResult[i].ProductStock.Stock, expectedResult[i].ProductStock.Stock);
+                Assert.AreEqual(returnedListResult[i].ProductStock.PriceId, expectedResult[i].ProductStock.PriceId);
+                Assert.AreEqual(returnedListResult[i].ProductStock.ProductId, expectedResult[i].ProductStock.ProductId);
+            }
         }
     }
 }
