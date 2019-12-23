@@ -128,6 +128,9 @@ namespace ThAmCo.Stock.Controllers
         [HttpGet("low/{count}")]
         public ActionResult<IEnumerable<ProductStockDto>> Low(int? count)
         {
+            if (count != null && count < 0)
+                return NotFound(); //0 is technically valid, since the request would want 0. below 0 would be an invalid request.
+                
             var listToCount = _context.GetAll().Result.OrderBy(ps => ps.ProductStock.Stock).Take(count ?? 5).ToList();
 
             return View(listToCount);
