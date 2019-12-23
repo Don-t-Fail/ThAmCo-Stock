@@ -205,7 +205,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task Low_ValidCountPassedLowerThanDefault_CorrectAndValidObjectReturned()
+        public void Low_ValidCountPassedLowerThanDefault_CorrectAndValidObjectReturned()
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
@@ -237,7 +237,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         }
         
         [TestMethod]
-        public async Task Low_ValidCountPassedHigherThanDefault_CorrectAndValidObjectReturned()
+        public void Low_ValidCountPassedHigherThanDefault_CorrectAndValidObjectReturned()
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
@@ -269,7 +269,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         }
         
         [TestMethod]
-        public async Task Low_NullValuePassed_DefaultAmountCorrectAndValidObjectsReturned()
+        public void Low_NullValuePassed_DefaultAmountCorrectAndValidObjectsReturned()
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
@@ -301,7 +301,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         }
         
         [TestMethod]
-        public async Task Low_OutOfBoundsCountPassed_AllValuesReturnedCorrectly()
+        public void Low_OutOfBoundsCountPassed_AllValuesReturnedCorrectly()
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
@@ -333,7 +333,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task Low_OutOfBoundsNegativePassed_NotFoundReturned()
+        public void Low_OutOfBoundsNegativePassed_NotFoundReturned()
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
