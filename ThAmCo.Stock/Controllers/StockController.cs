@@ -126,7 +126,7 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet("low/{count}")]
-        public async Task<ActionResult<IEnumerable<ProductStock>>> Low(int? count)
+        public ActionResult<IEnumerable<ProductStockDto>> Low(int? count)
         {
             var listToCount = _context.GetAll().Result.OrderBy(ps => ps.ProductStock.Stock).Take(count ?? 5).ToList();
 
