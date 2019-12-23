@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,18 +18,40 @@ namespace ThAmCo.Stock.Tests.Controllers
             public static List<ProductStock> ProductStocks() => new List<ProductStock>
             {
                 new ProductStock { Id = 1, Stock = 10, PriceId = 1, ProductId = 436 },
-                new ProductStock { Id = 2, Stock = 0, PriceId = 3, ProductId = 326 }
+                new ProductStock { Id = 2, Stock = 0, PriceId = 3, ProductId = 326 },
+                new ProductStock { Id = 3, Stock = 4, PriceId = 4, ProductId = 273 },
+                new ProductStock { Id = 4, Stock = 43, PriceId = 6, ProductId = 456 },
+                new ProductStock { Id = 5, Stock = 2, PriceId = 7, ProductId = 32 },
+                new ProductStock { Id = 6, Stock = 14, PriceId = 8, ProductId = 33 },
+                new ProductStock { Id = 7, Stock = 1, PriceId = 9, ProductId = 21 }
             };
             
             public static List<Price> Prices() => new List<Price>
             {
                 new Price { Id = 1, ProductStockId = 1, ProductPrice = 8.99 },
                 new Price { Id = 2, ProductStockId = 2, ProductPrice = 24.99 },
-                new Price { Id = 3, ProductStockId = 2, ProductPrice = 19.99 }
+                new Price { Id = 3, ProductStockId = 2, ProductPrice = 19.99 },
+                new Price { Id = 4, ProductStockId = 3, ProductPrice = 54.56 },
+                new Price { Id = 5, ProductStockId = 4, ProductPrice = 73.00 },
+                new Price { Id = 6, ProductStockId = 4, ProductPrice = 29.99 },
+                new Price { Id = 7, ProductStockId = 5, ProductPrice = 13.65 },
+                new Price { Id = 8, ProductStockId = 6, ProductPrice = 3.99 },
+                new Price { Id = 9, ProductStockId = 7, ProductPrice = 5.67}
+            };
+            
+            public static List<ProductStockDto> ProductStockDtos() => new List<ProductStockDto>
+            {
+                new ProductStockDto { ProductStock = ProductStocks()[0], Price = Prices()[0] },
+                new ProductStockDto { ProductStock = ProductStocks()[1], Price = Prices()[2] },
+                new ProductStockDto { ProductStock = ProductStocks()[2], Price = Prices()[3] },
+                new ProductStockDto { ProductStock = ProductStocks()[3], Price = Prices()[5] },
+                new ProductStockDto { ProductStock = ProductStocks()[4], Price = Prices()[6] },
+                new ProductStockDto { ProductStock = ProductStocks()[5], Price = Prices()[7] },
+                new ProductStockDto { ProductStock = ProductStocks()[6], Price = Prices()[8] }
             };
         }
         
-        private const int OutOfBoundsId = 4;
+        private const int OutOfBoundsId = 8;
         private const int NegativeId = -1;
         
         [TestMethod]
