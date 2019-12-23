@@ -40,8 +40,10 @@ namespace ThAmCo.Stock.Data.StockContext
         public Task<ProductStockDto> GetProductStockAsync(int id)
         {
             var prod = _productStocks.FirstOrDefault(p => p.Id == id);
+            
             if (prod == null)
-                return null;
+                return Task.FromResult<ProductStockDto>(null);
+            
             return Task.FromResult(new ProductStockDto
             {
                 ProductStock = prod,

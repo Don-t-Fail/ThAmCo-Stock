@@ -36,22 +36,28 @@ namespace ThAmCo.Stock.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductStockDetailsDto>> Details(int id)
         {
+            if (id < 0)
+                return NotFound();
+            
             var productStock = await _context.GetProductStockAsync(id);
 
             if (productStock == null)
                 return NotFound();
 
-            return new ProductStockDetailsDto
+            return Ok(new ProductStockDetailsDto
             {
                 ProductID = productStock.ProductStock.ProductId,
                 Stock = productStock.ProductStock.Stock,
                 Price = productStock.Price.ProductPrice
-            };
+            });
         }
 
         [HttpGet("PriceHistory/{id}")]
         public async Task<ActionResult<ProductStockPricingHistoryDto>> PriceHistory(int id)
         {
+            if (id < 0)
+                return NotFound();
+            
             var productStock = await _context.GetProductStockAsync(id);
 
             if (productStock == null)
@@ -66,7 +72,7 @@ namespace ThAmCo.Stock.Controllers
                 Prices = productPrices
             };
 
-            return productDetails;
+            return Ok(productDetails);
         }
 
         // PUT: api/Stock/5
@@ -120,9 +126,12 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet("low/{count}")]
-        public async Task<ActionResult<IEnumerable<ProductStock>>> Low(int? count)
+        public ActionResult<IEnumerable<ProductStockDto>> Low(int? count)
         {
-            var listToCount = _context.GetAll().Result.OrderBy(ps => ps.ProductStock.Stock).Take(count ?? 15).ToList();
+            if (count != null && count < 0)
+                return NotFound(); //0 is technically valid, since the request would want 0. below 0 would be an invalid request.
+                
+            var listToCount = _context.GetAll().Result.OrderBy(ps => ps.ProductStock.Stock).Take(count ?? 5).ToList();
 
             return View(listToCount);
         }
