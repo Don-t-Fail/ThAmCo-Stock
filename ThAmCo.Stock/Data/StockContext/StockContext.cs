@@ -51,9 +51,22 @@ namespace ThAmCo.Stock.Data.StockContext
             throw new System.NotImplementedException();
         }
 
+        public Price AddPriceAsync(Price price)
+        {
+            _context.Add(price);
+            _context.SaveChanges();
+            return price;
+        }
+
+        public void UpdateProductStockAsync(ProductStock productStock)
+        {
+            _context.Update(productStock);
+            SaveAndUpdateContext();
+        }
+
         public void SaveAndUpdateContext()
         {
-            throw new System.NotImplementedException();
+            _context.SaveChangesAsync();
         }
     }
 }
