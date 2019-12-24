@@ -189,15 +189,17 @@ namespace ThAmCo.Stock.Controllers
         public async Task<ActionResult<ProductStockDto>> AdjustCost(int id)
         {
             var productPrice = await _context.GetProductStockAsync(id);
+
             if (productPrice == null)
                 return NotFound();
+
             return View(new AdjustCostViewModel { Id = productPrice.ProductStock.Id, Cost = productPrice.Price.ProductPrice });
         }
 
         [HttpPost]
         public async Task<ActionResult> AdjustCost(int id, double cost)
         {
-            var productStock = _context.GetProductStockAsync(id).Result;
+            var productStock = await _context.GetProductStockAsync(id);
 
             if (productStock == null)
                 return NotFound();
