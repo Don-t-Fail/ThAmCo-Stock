@@ -1,0 +1,31 @@
+﻿@model ThAmCo.Stock.Models.Dto.ProductStockDto
+
+@{
+    ViewData["Title"] = "Adjust Cost";
+}
+
+<h1>Adjust Cost</h1>
+
+<h4>Cost</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AdjustCost">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ProductStock.ProductId" />
+            <div class="form-group">
+                <label asp-for="ProductStock.ProductId" class="control-label"></label>
+                <input asp-for="ProductStock.ProductId" class="form-control" disabled="disabled" />
+                <span asp-validation-for="ProductStock.ProductId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price.ProductPrice" class="control-label"></label>
+                <input asp-for="Price.ProductPrice" class="form-control" />
+                <span asp-validation-for="Price.ProductPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Adjust" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
