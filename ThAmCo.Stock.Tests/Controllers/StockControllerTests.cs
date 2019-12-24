@@ -61,7 +61,7 @@ namespace ThAmCo.Stock.Tests.Controllers
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
             var controller = new StockController(context, null);
 
-            var result = await controller.GetProductStock();
+            var result = await controller.ProductStocks();
             
             Assert.IsNotNull(result);
             var objectResult = result.Result as OkObjectResult;
@@ -89,7 +89,7 @@ namespace ThAmCo.Stock.Tests.Controllers
             var context = new MockStockContext(new List<ProductStock>(), new List<Price>());
             var controller = new StockController(context, null);
 
-            var result = await controller.GetProductStock();
+            var result = await controller.ProductStocks();
             
             Assert.IsNotNull(result);
             var objectResult = result.Result as OkObjectResult;

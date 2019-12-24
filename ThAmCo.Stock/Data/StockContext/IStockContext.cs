@@ -10,6 +10,8 @@ namespace ThAmCo.Stock.Data.StockContext
         Task<IEnumerable<Price>> GetAllPrices();
         Task<ProductStockDto> GetProductStockAsync(int id);
         void AddProductStockAsync();
+        Price AddPriceAsync(Price price);
+        void UpdateProductStockAsync(ProductStock productStock);
         void SaveAndUpdateContext();
     }
 }

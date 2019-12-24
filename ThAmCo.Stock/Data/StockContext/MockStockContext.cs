@@ -56,6 +56,20 @@ namespace ThAmCo.Stock.Data.StockContext
             throw new System.NotImplementedException();
         }
 
+        public Price AddPriceAsync(Price price)
+        {
+            price.Id = _prices.OrderByDescending(p => p.Id).First().Id;
+            _prices.Add(price);
+            return price;
+        }
+
+        public void UpdateProductStockAsync(ProductStock productStock)
+        {
+            var update = _productStocks.FirstOrDefault(p => p.Id == productStock.Id);
+            if (update != null && productStock != null)
+                update.Id = productStock.Id;
+        }
+
         public void SaveAndUpdateContext()
         {
             throw new System.NotImplementedException();
