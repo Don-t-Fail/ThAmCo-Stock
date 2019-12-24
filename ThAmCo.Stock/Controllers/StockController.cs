@@ -195,16 +195,27 @@ namespace ThAmCo.Stock.Controllers
             if (productPrice == null)
                 return NotFound();
 
+            AdjustCostViewModel objectResponse;
             var client = GetHttpClient("StandardRequest");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
-            var response = await client.GetAsync("https://localhost:44385/stock/");
+            var response = await client.GetAsync("https://localhost:44375/products/getProduct/" + id);
             if (response.IsSuccessStatusCode)
             {
                 var objectResult = await response.Content.ReadAsAsync<ProductDto>();
+                if (objectResult == null)
+                    return NotFound();
+                objectResponse = new AdjustCostViewModel
+                {
+                    Id = productPrice.ProductStock.Id,
+                    Cost = productPrice.Price.ProductPrice,
+                    Name = objectResult.Name,
+                    Description = objectResult.Description
+                };
             }
+            else return NotFound();
 
-                return View(new AdjustCostViewModel { Id = productPrice.ProductStock.Id, Cost = productPrice.Price.ProductPrice });
+            return View(objectResponse);
         }
 
         [HttpPost]
