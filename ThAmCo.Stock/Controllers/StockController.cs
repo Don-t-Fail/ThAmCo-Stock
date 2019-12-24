@@ -18,6 +18,8 @@ namespace ThAmCo.Stock.Controllers
         private readonly IStockContext _context;
         private readonly IHttpClientFactory _clientFactory;
 
+        public HttpClient HttpClient { get; set; }
+
         public StockController(IStockContext context, IHttpClientFactory httpClientFactory)
         {
             _context = context;
@@ -193,7 +195,16 @@ namespace ThAmCo.Stock.Controllers
             if (productPrice == null)
                 return NotFound();
 
-            return View(new AdjustCostViewModel { Id = productPrice.ProductStock.Id, Cost = productPrice.Price.ProductPrice });
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var response = await client.GetAsync("https://localhost:44385/stock/");
+            if (response.IsSuccessStatusCode)
+            {
+                var objectResult = await response.Content.ReadAsAsync<ProductDto>();
+            }
+
+                return View(new AdjustCostViewModel { Id = productPrice.ProductStock.Id, Cost = productPrice.Price.ProductPrice });
         }
 
         [HttpPost]
@@ -214,6 +225,13 @@ namespace ThAmCo.Stock.Controllers
         private bool ProductStockExists(int id)
         {
             return _context.GetAll().Result.Any(e => e.ProductStock.Id == id);
+        }
+
+        private HttpClient GetHttpClient(string s)
+        {
+            if (_clientFactory == null && HttpClient != null) return HttpClient;
+
+            return _clientFactory.CreateClient(s);
         }
     }
 }
