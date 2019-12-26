@@ -233,6 +233,18 @@ namespace ThAmCo.Stock.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<ActionResult> OrderRequest(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> OrderRequestConfirmed(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         private bool ProductStockExists(int id)
         {
             return _context.GetAll().Result.Any(e => e.ProductStock.Id == id);
