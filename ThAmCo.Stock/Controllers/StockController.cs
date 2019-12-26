@@ -234,6 +234,12 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet]
+        public async Task<ActionResult> VendorProducts()
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet]
         public async Task<ActionResult> OrderRequest(int id)
         {
             throw new NotImplementedException();
