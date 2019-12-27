@@ -236,7 +236,30 @@ namespace ThAmCo.Stock.Controllers
         [HttpGet]
         public async Task<ActionResult> VendorProducts()
         {
-            throw new NotImplementedException();
+            var vendorProducts = new VendorProductIndexModel();
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var underCuttersResponse = await client.GetAsync("http://undercutters.azurewebsites.net/api/product");
+            var dodgyDealersResponse = await client.GetAsync("http://dodgydealers.azurewebsites.net/api/product");
+            if (underCuttersResponse.IsSuccessStatusCode)
+            {
+                var objectResult = await underCuttersResponse.Content.ReadAsAsync<List<VendorProductDto>>();
+                if (objectResult == null)
+                    goto View;
+                vendorProducts.Products = objectResult;
+            }
+
+            if (dodgyDealersResponse.IsSuccessStatusCode)
+            {
+                var objectResult = await dodgyDealersResponse.Content.ReadAsAsync<List<VendorProductDto>>();
+                if (objectResult == null)
+                    goto View;
+                vendorProducts.Products.Concat(objectResult);
+            }
+
+            View:
+            return View(vendorProducts);
         }
 
         [HttpGet]
