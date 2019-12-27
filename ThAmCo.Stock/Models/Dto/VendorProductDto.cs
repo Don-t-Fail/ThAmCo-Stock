@@ -14,6 +14,6 @@ namespace ThAmCo.Stock.Models.Dto
         public string Description { get; set; }
         public double Price { get; set; }
         public bool InStock { get; set; }
-        public DateTime ExpectedRestock { get; set; }
+        public DateTime? ExpectedRestock { get; set; }
     }
 }
