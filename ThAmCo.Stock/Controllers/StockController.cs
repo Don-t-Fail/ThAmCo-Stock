@@ -234,44 +234,65 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> VendorProducts()
+        public async Task<ActionResult> VendorProducts(string supplier)
         {
-            var vendorProducts = new VendorProductIndexModel();
+            var vendorProducts = new VendorProductIndexModel
+            {
+                Vendor = supplier
+            };
             var client = GetHttpClient("StandardRequest");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
-            var underCuttersResponse = await client.GetAsync("http://undercutters.azurewebsites.net/api/product");
-            var dodgyDealersResponse = await client.GetAsync("http://dodgydealers.azurewebsites.net/api/product");
-            if (underCuttersResponse.IsSuccessStatusCode)
+            HttpResponseMessage response = null;
+
+            var url = GetURLForSupplier(supplier);
+            if (url == null)
+                return NotFound();
+
+            response = await client.GetAsync(url);
+
+            if (response?.IsSuccessStatusCode == true)
             {
-                var objectResult = await underCuttersResponse.Content.ReadAsAsync<List<VendorProductDto>>();
+                var objectResult = await response.Content.ReadAsAsync<List<VendorProductDto>>();
                 if (objectResult == null)
                     goto View;
                 vendorProducts.Products = objectResult;
             }
-
-            if (dodgyDealersResponse.IsSuccessStatusCode)
-            {
-                var objectResult = await dodgyDealersResponse.Content.ReadAsAsync<List<VendorProductDto>>();
-                if (objectResult == null)
-                    goto View;
-                vendorProducts.Products.Concat(objectResult);
-            }
+            else return NotFound();
 
             View:
             return View(vendorProducts);
         }
 
         [HttpGet]
-        public async Task<ActionResult> OrderRequest(int id)
+        public async Task<ActionResult> OrderRequest(int id, string supplier)
         {
-            throw new NotImplementedException();
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var url = GetURLForSupplier(supplier);
+            if (url == null)
+                return NotFound();
+
+            HttpResponseMessage response = null;
+
+            response = await client.GetAsync(url + "/" + id);
+
+            if (response?.IsSuccessStatusCode == true)
+            {
+                var objectResult = await response.Content.ReadAsAsync<VendorProductDto>();
+                if (objectResult == null)
+                    return NotFound();
+                return View(new OrderRequestModel { Id = id, Name = objectResult.Name, Description = objectResult.Description, Supplier = supplier });
+            }
+            else return NotFound();
         }
 
         [HttpPost]
-        public async Task<ActionResult> OrderRequestConfirmed(int id)
+        public async Task<ActionResult> OrderRequestSubmitted(int id, string supplier, int quantity)
         {
-            throw new NotImplementedException();
+            var client = GetHttpClient("StandardRequest");
+            var result = await client.PostAsync("/api/Membership/exists", content);
         }
 
         private bool ProductStockExists(int id)
@@ -284,6 +305,13 @@ namespace ThAmCo.Stock.Controllers
             if (_clientFactory == null && HttpClient != null) return HttpClient;
 
             return _clientFactory.CreateClient(s);
+        }
+
+        private string GetURLForSupplier(string s)
+        {
+            if (s == "undercutters") return "http://undercutters.azurewebsites.net/api/product";
+            else if (s == "dodgydealers") return "http://dodgydealers.azurewebsites.net/api/product";
+            else return null;
         }
     }
 }
