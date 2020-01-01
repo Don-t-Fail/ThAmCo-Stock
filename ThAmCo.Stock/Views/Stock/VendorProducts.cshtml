@@ -80,9 +80,12 @@
                     @Html.DisplayFor(modelItem => item.CategoryName)
                 </td>
                 <td>
-                    <a asp-action="OrderRequest" asp-route-id="@item.Id">Order</a>
+                    <a asp-action="OrderRequest" asp-route-id="@item.Id" asp-route-supplier="@Model.Vendor">Order</a>
                 </td>
-            </tr>
+
+
+
+</tr>
         }
     </tbody>
 </table>
