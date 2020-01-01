@@ -1,0 +1,30 @@
+﻿@model ThAmCo.Stock.Models.ViewModel.OrderRequestModel
+
+@{
+    ViewData["Title"] = "Order Request";
+}
+
+<h1>OrderRequest</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        @Html.LabelFor(m => m.Name) :
+        @Html.DisplayFor(m => m.Name)
+        <br />
+        @Html.LabelFor(m => m.Description) :
+        @Html.DisplayFor(m => m.Description)
+        <br />
+        @Html.LabelFor(m => m.Supplier) :
+        @Html.DisplayFor(m => m.Supplier)
+        <form asp-action="OrderRequestSubmitted">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label class="control-label">Quantity</label>
+                <input type="number" class="form-control" min="1" value="2" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Request Order" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
