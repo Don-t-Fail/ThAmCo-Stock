@@ -58,7 +58,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public async Task GetAll_AllValid_AllReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
 
             var result = await controller.ProductStocks();
@@ -86,7 +86,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public async Task GetAll_EmptyModel_EmptyListReturned()
         {
-            var context = new MockStockContext(new List<ProductStock>(), new List<Price>());
+            var context = new MockStockContext(new List<ProductStock>(), new List<Price>(), null);
             var controller = new StockController(context, null);
 
             var result = await controller.ProductStocks();
@@ -103,7 +103,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public async Task GetDetails_ValidIdPassed_CorrectAndValidObjectReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int id = 2;
 
@@ -123,7 +123,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public async Task GetDetails_OutOfBoundsPositiveId_NotFoundReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int id = OutOfBoundsId;
 
@@ -137,7 +137,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public async Task GetDetails_OutOfBoundsNegativeId_NotFoundReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int id = NegativeId;
 
@@ -151,7 +151,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public async Task PriceHistory_ValidIdPassed_CorrectAndValidObjectReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int id = 1;
 
@@ -179,7 +179,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public async Task PriceHistory_OutOfBoundsPositiveId_NotFoundReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int id = OutOfBoundsId;
 
@@ -193,7 +193,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public async Task PriceHistory_OutOfBoundsNegativeId_NotFoundReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int id = NegativeId;
 
@@ -207,7 +207,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public void Low_ValidCountPassedLowerThanDefault_CorrectAndValidObjectReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int count = 4;
 
@@ -239,7 +239,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public void Low_ValidCountPassedHigherThanDefault_CorrectAndValidObjectReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int count = 6;
 
@@ -271,7 +271,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public void Low_NullValuePassed_DefaultAmountCorrectAndValidObjectsReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int count = 5;
 
@@ -303,7 +303,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public void Low_OutOfBoundsCountPassed_AllValuesReturnedCorrectly()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int count = OutOfBoundsId;
 
@@ -335,7 +335,7 @@ namespace ThAmCo.Stock.Tests.Controllers
         [TestMethod]
         public void Low_OutOfBoundsNegativePassed_NotFoundReturned()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices());
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
             const int count = NegativeId;
 

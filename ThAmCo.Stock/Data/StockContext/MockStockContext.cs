@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,11 +10,13 @@ namespace ThAmCo.Stock.Data.StockContext
     {
         private readonly List<ProductStock> _productStocks;
         private readonly List<Price> _prices;
+        private readonly List<OrderRequest> _orderRequests;
 
-        public MockStockContext(List<ProductStock> productStocks, List<Price> prices)
+        public MockStockContext(List<ProductStock> productStocks, List<Price> prices, List<OrderRequest> orderRequests)
         {
             _productStocks = productStocks;
             _prices = prices;
+            _orderRequests = orderRequests;
         }
         
         public Task<IEnumerable<ProductStockDto>> GetAll()
@@ -51,6 +54,16 @@ namespace ThAmCo.Stock.Data.StockContext
             });
         }
 
+        public Task<IEnumerable<OrderRequest>> GetAllOrderRequests()
+        {
+            return Task.FromResult(_orderRequests.AsEnumerable());
+        }
+
+        public Task<OrderRequest> GetOrderRequest(int id)
+        {
+            return Task.FromResult(_orderRequests.FirstOrDefault(or => or.Id == id));
+        }
+
         public void AddProductStockAsync()
         {
             throw new System.NotImplementedException();
@@ -63,11 +76,33 @@ namespace ThAmCo.Stock.Data.StockContext
             return price;
         }
 
+        public void AddOrderRequest(OrderRequest order)
+        {
+            _orderRequests.Add(order);
+        }
+
         public void UpdateProductStockAsync(ProductStock productStock)
         {
             var update = _productStocks.FirstOrDefault(p => p.Id == productStock.Id);
             if (update != null && productStock != null)
                 update.Id = productStock.Id;
+        }
+
+        public void UpdateOrderRequest(OrderRequest orderRequest)
+        {
+            var update = _orderRequests.FirstOrDefault(or => or.Id == orderRequest.Id);
+            if (update != null)
+                update = orderRequest;
+        }
+
+        public void ApproveOrderRequest(int id)
+        {
+            var approve = _orderRequests.FirstOrDefault(or => or.Id == id);
+            if (approve != null)
+            {
+                approve.Approved = true;
+                approve.ApprovedTime = DateTime.Now;
+            }
         }
 
         public void SaveAndUpdateContext()

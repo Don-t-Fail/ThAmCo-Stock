@@ -4,8 +4,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ThAmCo.Stock.Data;
 using ThAmCo.Stock.Data.StockContext;
 using ThAmCo.Stock.Models.Dto;
@@ -233,7 +233,178 @@ namespace ThAmCo.Stock.Controllers
             return Ok();
         }
 
-        private bool ProductStockExists(int id)
+        [HttpGet]
+        public async Task<ActionResult> VendorProducts(string supplier)
+        {
+            var vendorProducts = new VendorProductIndexModel
+            {
+                Vendor = supplier
+            };
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            HttpResponseMessage response = null;
+
+            var url = GetURLForSupplier(supplier);
+            if (url == null)
+                return NotFound();
+
+            response = await client.GetAsync(url + "product");
+
+            if (response?.IsSuccessStatusCode == true)
+            {
+                var objectResult = await response.Content.ReadAsAsync<List<VendorProductDto>>();
+                if (objectResult == null)
+                    goto View;
+                vendorProducts.Products = objectResult;
+            }
+            else return NotFound();
+
+            View:
+            return View(vendorProducts);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> OrderRequest(int id, string supplier)
+        {
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var url = GetURLForSupplier(supplier);
+            if (url == null)
+                return NotFound();
+
+            HttpResponseMessage response = null;
+
+            response = await client.GetAsync(url + "product/" + id);
+
+            if (response?.IsSuccessStatusCode == true)
+            {
+                var objectResult = await response.Content.ReadAsAsync<VendorProductDto>();
+                if (objectResult == null)
+                    return NotFound();
+                return View(new OrderRequestModel { Id = id, Name = objectResult.Name, Description = objectResult.Description, Supplier = supplier });
+            }
+            else return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> OrderRequestSubmitted(int id, string supplier, int quantity)
+        {
+            var orderRequest = new OrderRequest
+            {
+                Quantity = quantity,
+                Supplier = supplier,
+                SubmittedTime = DateTime.Now,
+                Approved = false,
+                ApprovedTime = null,
+                Deleted = false
+            };
+
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var url = GetURLForSupplier(supplier);
+            if (url == null)
+                return NotFound();
+
+            HttpResponseMessage response = null;
+
+            response = await client.GetAsync(url + "product/" + id);
+
+            if (response?.IsSuccessStatusCode == true)
+            {
+                var objectResult = await response.Content.ReadAsAsync<VendorProductDto>();
+                if (objectResult == null)
+                    return NotFound();
+                orderRequest.ProductId = objectResult.Id;
+                orderRequest.Price = objectResult.Price * quantity;
+
+                _context.AddOrderRequest(orderRequest);
+
+                return RedirectToAction(nameof(VendorProducts), new { supplier });
+            }
+            else return NotFound();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> OrderRequests()
+        {
+            return View(_context.GetAllOrderRequests().Result.Where(or => !or.Approved).ToList());
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> OrderRequestReview(int id)
+        {
+            var orderRequest = _context.GetOrderRequest(id).Result;
+            if (orderRequest == null)
+                return NotFound();
+
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var url = GetURLForSupplier(orderRequest.Supplier);
+            if (url == null)
+                return NotFound();
+
+            HttpResponseMessage response = null;
+
+            response = await client.GetAsync(url + "product/" + orderRequest.ProductId);
+
+            if (response?.IsSuccessStatusCode == true)
+            {
+                var objectResult = await response.Content.ReadAsAsync<VendorProductDto>();
+                if (objectResult == null)
+                    return NotFound();
+
+                //Update order details incase service changes prices.
+                if (orderRequest.Price != objectResult.Price * orderRequest.Quantity)
+                {
+                    orderRequest.Price = objectResult.Price * orderRequest.Quantity;
+                    _context.UpdateOrderRequest(orderRequest);
+                }
+
+                var reviewModel = new OrderRequestReviewModel
+                {
+                    Id = orderRequest.Id,
+                    Name = objectResult.Name,
+                    Description = objectResult.Description,
+                    Price = orderRequest.Price,
+                    Quantity = orderRequest.Quantity,
+                    Supplier = orderRequest.Supplier
+                };
+
+                return View(reviewModel);
+            }
+            else return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> OrderRequestApproved(int id)
+        {
+            var orderRequest = _context.GetOrderRequest(id).Result;
+            if (orderRequest == null)
+                return NotFound();
+            var orderDto = new ProductOrderPostDto
+            {
+                AccountName = "sample string 1",
+                CardNumber = "sample string 2",
+                ProductId = orderRequest.ProductId,
+                Quantity = orderRequest.Quantity
+            };
+
+            var client = GetHttpClient("StandardRequest");
+            var result = await client.PostAsJsonAsync(GetURLForSupplier(orderRequest.Supplier) + "order", orderDto);
+            if (result.IsSuccessStatusCode)
+            {
+                _context.ApproveOrderRequest(id);
+                return Ok(result.Content);
+                //return RedirectToAction(nameof(OrderRequests));
+            }
+            return NotFound();
+        }
+
+            private bool ProductStockExists(int id)
         {
             return _context.GetAll().Result.Any(e => e.ProductStock.Id == id);
         }
@@ -243,6 +414,13 @@ namespace ThAmCo.Stock.Controllers
             if (_clientFactory == null && HttpClient != null) return HttpClient;
 
             return _clientFactory.CreateClient(s);
+        }
+
+        private string GetURLForSupplier(string s)
+        {
+            if (s == "undercutters") return "http://undercutters.azurewebsites.net/api/";
+            else if (s == "dodgydealers") return "http://dodgydealers.azurewebsites.net/api/";
+            else return null;
         }
     }
 }

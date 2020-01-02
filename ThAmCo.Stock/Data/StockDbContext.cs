@@ -12,6 +12,8 @@ namespace ThAmCo.Stock.Data
         public DbSet<Price> Prices { get; set; }
         public DbSet<ProductStock> ProductStocks { get; set; }
 
+        public DbSet<OrderRequest> OrderRequests { get; set; }
+
         private IHostingEnvironment HostEnv { get; }
 
         public StockDbContext(DbContextOptions<StockDbContext> options, IHostingEnvironment env) : base(options)
@@ -33,6 +35,9 @@ namespace ThAmCo.Stock.Data
 
             builder.Entity<ProductStock>()
                 .HasKey(ps => ps.Id);
+
+            builder.Entity<OrderRequest>()
+                .HasKey(or => or.Id);
 
             if (HostEnv != null && HostEnv.IsDevelopment())
             {

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ThAmCo.Stock.Data;
 
 namespace ThAmCo.Stock.Data.Migrations
 {
     [DbContext(typeof(StockDbContext))]
-    partial class StockDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200102001637_AddBaseOrderRequests")]
+    partial class AddBaseOrderRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,7 +29,7 @@ namespace ThAmCo.Stock.Data.Migrations
 
                     b.Property<bool>("Approved");
 
-                    b.Property<DateTime?>("ApprovedTime");
+                    b.Property<DateTime>("ApprovedTime");
 
                     b.Property<bool>("Deleted");
 
@@ -38,8 +40,6 @@ namespace ThAmCo.Stock.Data.Migrations
                     b.Property<int>("Quantity");
 
                     b.Property<DateTime>("SubmittedTime");
-
-                    b.Property<string>("Supplier");
 
                     b.HasKey("Id");
 

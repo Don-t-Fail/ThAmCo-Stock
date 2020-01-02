@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,6 +47,16 @@ namespace ThAmCo.Stock.Data.StockContext
             };
         }
 
+        public async Task<IEnumerable<OrderRequest>> GetAllOrderRequests()
+        {
+            return await _context.OrderRequests.ToListAsync();
+        }
+
+        public async Task<OrderRequest> GetOrderRequest(int id)
+        {
+            return await _context.OrderRequests.FirstOrDefaultAsync(or => or.Id == id);
+        }
+
         public void AddProductStockAsync()
         {
             throw new System.NotImplementedException();
@@ -58,10 +69,31 @@ namespace ThAmCo.Stock.Data.StockContext
             return price;
         }
 
+        public void AddOrderRequest(OrderRequest order)
+        {
+            _context.Add(order);
+            _context.SaveChanges();
+        }
+
         public void UpdateProductStockAsync(ProductStock productStock)
         {
             _context.Update(productStock);
             SaveAndUpdateContext();
+        }
+
+        public void UpdateOrderRequest(OrderRequest orderRequest)
+        {
+            _context.Update(orderRequest);
+            _context.SaveChanges();
+        }
+
+        public void ApproveOrderRequest(int id)
+        {
+            var productStock = GetOrderRequest(id).Result;
+            if (productStock == null) return;
+            productStock.Approved = true;
+            productStock.ApprovedTime = DateTime.Now;
+            _context.Update(productStock);
         }
 
         public void SaveAndUpdateContext()
