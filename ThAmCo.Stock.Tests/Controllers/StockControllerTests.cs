@@ -345,5 +345,32 @@ namespace ThAmCo.Stock.Tests.Controllers
             var priceResult = result.Result as NotFoundResult;
             Assert.IsNotNull(priceResult);
         }
+
+        //[TestMethod]
+        public void GETAdjustCost_ValidIdPassed_CorrectDataReturnedToView()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const int id = 2;
+
+            var expectedResult = Data.ProductStockDtos().FirstOrDefault(psd => psd.ProductStock.Id == id);
+            var result = controller.AdjustCost(id);
+
+            Assert.IsNotNull(result);
+            var adjustResult = result.Result.Result as ViewResult;
+            Assert.IsNotNull(adjustResult);
+            var adjustProductStock = adjustResult.Model as ProductStockDto;
+            Assert.IsNotNull(adjustProductStock);
+
+            Assert.AreEqual(expectedResult.ProductStock.Id, adjustProductStock.ProductStock.Id);
+            Assert.AreEqual(expectedResult.ProductStock.PriceId, adjustProductStock.ProductStock.PriceId);
+            Assert.AreEqual(expectedResult.ProductStock.ProductId, adjustProductStock.ProductStock.ProductId);
+            Assert.AreEqual(expectedResult.ProductStock.Stock, adjustProductStock.ProductStock.Stock);
+
+            Assert.AreEqual(expectedResult.Price.Id, adjustProductStock.Price.Id);
+            Assert.AreEqual(expectedResult.Price.Date, adjustProductStock.Price.Date);
+            Assert.AreEqual(expectedResult.Price.ProductPrice, adjustProductStock.Price.ProductPrice);
+            Assert.AreEqual(expectedResult.Price.ProductStockId, adjustProductStock.Price.ProductStockId);
+        }
     }
 }
