@@ -188,7 +188,7 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ProductStockDto>> AdjustCost(int id)
+        public async Task<ActionResult<AdjustCostViewModel>> AdjustCost(int id)
         {
             var productPrice = await _context.GetProductStockAsync(id);
 

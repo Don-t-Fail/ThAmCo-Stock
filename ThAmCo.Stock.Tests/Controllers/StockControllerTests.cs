@@ -8,6 +8,13 @@ using ThAmCo.Stock.Controllers;
 using ThAmCo.Stock.Data;
 using ThAmCo.Stock.Data.StockContext;
 using ThAmCo.Stock.Models.Dto;
+using Moq;
+using System.Net.Http;
+using Moq.Protected;
+using System.Threading;
+using Newtonsoft.Json;
+using System.Text;
+using ThAmCo.Stock.Models.ViewModel;
 
 namespace ThAmCo.Stock.Tests.Controllers
 {
@@ -54,6 +61,19 @@ namespace ThAmCo.Stock.Tests.Controllers
         
         private const int OutOfBoundsId = 8;
         private const int NegativeId = -1;
+
+        private Mock<HttpMessageHandler> CreateHttpMock(HttpResponseMessage expected)
+        {
+            var mock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            mock.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(expected)
+                .Verifiable();
+            return mock;
+        }
         
         [TestMethod]
         public async Task GetAll_AllValid_AllReturned()
@@ -346,31 +366,36 @@ namespace ThAmCo.Stock.Tests.Controllers
             Assert.IsNotNull(priceResult);
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void GETAdjustCost_ValidIdPassed_CorrectDataReturnedToView()
         {
-            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
-            var controller = new StockController(context, null);
             const int id = 2;
-
+            var expectedHttpResponse = new ProductDto { Id = id, Name = "NameTest", Description = "DescriptionTest" };
+            var expectedJson = JsonConvert.SerializeObject(expectedHttpResponse);
+            var expectedResponse = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent(expectedJson,
+                                            Encoding.UTF8,
+                                            "application/json")
+            };
+            var httpClient = new HttpClient(CreateHttpMock(expectedResponse).Object);
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null) { HttpClient = httpClient };
+            
             var expectedResult = Data.ProductStockDtos().FirstOrDefault(psd => psd.ProductStock.Id == id);
             var result = controller.AdjustCost(id);
 
             Assert.IsNotNull(result);
             var adjustResult = result.Result.Result as ViewResult;
             Assert.IsNotNull(adjustResult);
-            var adjustProductStock = adjustResult.Model as ProductStockDto;
+            var adjustProductStock = adjustResult.Model as AdjustCostViewModel;
             Assert.IsNotNull(adjustProductStock);
 
-            Assert.AreEqual(expectedResult.ProductStock.Id, adjustProductStock.ProductStock.Id);
-            Assert.AreEqual(expectedResult.ProductStock.PriceId, adjustProductStock.ProductStock.PriceId);
-            Assert.AreEqual(expectedResult.ProductStock.ProductId, adjustProductStock.ProductStock.ProductId);
-            Assert.AreEqual(expectedResult.ProductStock.Stock, adjustProductStock.ProductStock.Stock);
-
-            Assert.AreEqual(expectedResult.Price.Id, adjustProductStock.Price.Id);
-            Assert.AreEqual(expectedResult.Price.Date, adjustProductStock.Price.Date);
-            Assert.AreEqual(expectedResult.Price.ProductPrice, adjustProductStock.Price.ProductPrice);
-            Assert.AreEqual(expectedResult.Price.ProductStockId, adjustProductStock.Price.ProductStockId);
+            Assert.AreEqual(expectedResult.ProductStock.Id, adjustProductStock.Id);
+            Assert.AreEqual(expectedResult.Price.ProductPrice, adjustProductStock.Cost);
+            Assert.AreEqual(expectedHttpResponse.Name, adjustProductStock.Name);
+            Assert.AreEqual(expectedHttpResponse.Description, adjustProductStock.Description);
         }
     }
 }
