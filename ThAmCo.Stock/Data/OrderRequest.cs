@@ -6,6 +6,7 @@ namespace ThAmCo.Stock.Data
     {
         public int Id { get; set; }
         public int ProductId { get; set; }
+        public string Supplier { get; set; }
         public int Quantity { get; set; }
         public double Price { get; set; }
         public DateTime SubmittedTime { get; set; }
