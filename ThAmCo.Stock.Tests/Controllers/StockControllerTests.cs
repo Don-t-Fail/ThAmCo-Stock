@@ -383,7 +383,6 @@ namespace ThAmCo.Stock.Tests.Controllers
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null) { HttpClient = httpClient };
             
-
             var expectedResult = Data.ProductStockDtos().FirstOrDefault(psd => psd.ProductStock.Id == id);
             var result = controller.AdjustCost(id);
 
