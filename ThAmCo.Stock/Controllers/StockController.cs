@@ -326,6 +326,13 @@ namespace ThAmCo.Stock.Controllers
             else return NotFound();
         }
 
+        [HttpGet]
+        public async Task<ActionResult> OrderRequests()
+        {
+            return View(_context.GetAllOrderRequests().Result.ToList());
+        }
+
+
         private bool ProductStockExists(int id)
         {
             return _context.GetAll().Result.Any(e => e.ProductStock.Id == id);
