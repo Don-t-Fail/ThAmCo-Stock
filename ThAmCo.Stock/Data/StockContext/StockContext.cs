@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -78,6 +79,15 @@ namespace ThAmCo.Stock.Data.StockContext
         {
             _context.Update(productStock);
             SaveAndUpdateContext();
+        }
+
+        public void ApproveOrderRequest(int id)
+        {
+            var productStock = GetOrderRequest(id).Result;
+            if (productStock == null) return;
+            productStock.Approved = true;
+            productStock.ApprovedTime = DateTime.Now;
+            _context.Update(productStock);
         }
 
         public void SaveAndUpdateContext()
