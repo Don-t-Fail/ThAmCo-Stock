@@ -46,6 +46,16 @@ namespace ThAmCo.Stock.Data.StockContext
             };
         }
 
+        public async Task<IEnumerable<OrderRequest>> GetAllOrderRequests()
+        {
+            return await _context.OrderRequests.ToListAsync();
+        }
+
+        public async Task<OrderRequest> GetOrderRequest(int id)
+        {
+            return await _context.OrderRequests.FirstOrDefaultAsync(or => or.Id == id);
+        }
+
         public void AddProductStockAsync()
         {
             throw new System.NotImplementedException();
@@ -56,6 +66,12 @@ namespace ThAmCo.Stock.Data.StockContext
             _context.Add(price);
             _context.SaveChanges();
             return price;
+        }
+
+        public void AddOrderRequest(OrderRequest order)
+        {
+            _context.Add(order);
+            _context.SaveChanges();
         }
 
         public void UpdateProductStockAsync(ProductStock productStock)
