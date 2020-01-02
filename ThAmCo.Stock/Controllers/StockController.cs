@@ -249,7 +249,7 @@ namespace ThAmCo.Stock.Controllers
             if (url == null)
                 return NotFound();
 
-            response = await client.GetAsync(url);
+            response = await client.GetAsync(url + "/products");
 
             if (response?.IsSuccessStatusCode == true)
             {
@@ -276,7 +276,7 @@ namespace ThAmCo.Stock.Controllers
 
             HttpResponseMessage response = null;
 
-            response = await client.GetAsync(url + "/" + id);
+            response = await client.GetAsync(url + "/products/" + id);
 
             if (response?.IsSuccessStatusCode == true)
             {
@@ -309,8 +309,8 @@ namespace ThAmCo.Stock.Controllers
 
         private string GetURLForSupplier(string s)
         {
-            if (s == "undercutters") return "http://undercutters.azurewebsites.net/api/product";
-            else if (s == "dodgydealers") return "http://dodgydealers.azurewebsites.net/api/product";
+            if (s == "undercutters") return "http://undercutters.azurewebsites.net/api/";
+            else if (s == "dodgydealers") return "http://dodgydealers.azurewebsites.net/api/";
             else return null;
         }
     }
