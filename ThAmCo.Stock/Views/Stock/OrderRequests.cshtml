@@ -41,7 +41,7 @@
                 £@Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                <a asp-action="OrderRequestApproved" asp-route-id="@item.Id">Approve</a>
+                <a asp-action="OrderRequestReview" asp-route-id="@item.Id">Review</a>
             </td>
         </tr>
         }
