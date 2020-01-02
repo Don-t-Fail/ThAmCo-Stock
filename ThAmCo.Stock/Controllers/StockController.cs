@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ThAmCo.Stock.Data;
 using ThAmCo.Stock.Data.StockContext;
@@ -329,11 +328,46 @@ namespace ThAmCo.Stock.Controllers
         [HttpGet]
         public async Task<ActionResult> OrderRequests()
         {
-            return View(_context.GetAllOrderRequests().Result.ToList());
+            return View(_context.GetAllOrderRequests().Result.Where(or => !or.Approved).ToList());
         }
 
+        [HttpGet]
+        public async Task<ActionResult> OrderRequestReview()
+        {
 
-        private bool ProductStockExists(int id)
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> OrderRequestApproved(int id)
+        {
+            var orderRequest = _context.GetOrderRequest(id).Result;
+            if (orderRequest == null)
+                return NotFound();
+            var orderDto = new ProductOrderDto
+            {
+                Id = 1,
+                AccountName = "AccountName1",
+                CardNumber = "5",
+                ProductId = orderRequest.ProductId,
+                Quantity = orderRequest.Quantity,
+                When = DateTime.Now,
+                ProductName = "Product1",
+                ProductEan = "ProductEan1",
+                TotalPrice = 4.5
+            };
+
+            var client = GetHttpClient("StandardRequest");
+            var result = await client.PostAsJsonAsync(GetURLForSupplier("undercutters") + "order", orderDto);
+            Console.WriteLine(await result.Content.ReadAsStringAsync());
+            if (result.IsSuccessStatusCode)
+            {
+                _context.ApproveOrderRequest(id);
+                return RedirectToAction(nameof(OrderRequests));
+            }
+            return NotFound();
+        }
+
+            private bool ProductStockExists(int id)
         {
             return _context.GetAll().Result.Any(e => e.ProductStock.Id == id);
         }
