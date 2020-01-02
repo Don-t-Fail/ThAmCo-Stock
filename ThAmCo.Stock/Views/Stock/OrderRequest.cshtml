@@ -16,15 +16,16 @@
         <br />
         @Html.LabelFor(m => m.Supplier) :
         @Html.DisplayFor(m => m.Supplier)
-        <form asp-action="OrderRequestSubmitted">
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label class="control-label">Quantity</label>
-                <input type="number" class="form-control" min="1" value="2" />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Request Order" class="btn btn-primary" />
-            </div>
-        </form>
+    <form asp-action="OrderRequestSubmitted">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Supplier" />
+        <div class="form-group">
+            <label class="control-label">Quantity</label>
+            <input type="number" name="quantity" class="form-control" min="1" value="1" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Request Order" class="btn btn-primary" />
+        </div>
+    </form>
     </div>
 </div>
