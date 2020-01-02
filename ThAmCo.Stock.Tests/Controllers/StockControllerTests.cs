@@ -397,5 +397,23 @@ namespace ThAmCo.Stock.Tests.Controllers
             Assert.AreEqual(expectedHttpResponse.Name, adjustProductStock.Name);
             Assert.AreEqual(expectedHttpResponse.Description, adjustProductStock.Description);
         }
+
+        [TestMethod]
+        public void GETAdjustCost_InvalidIdPassed_NotFoundReturned()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+
+            var resultOutOfBounds = controller.AdjustCost(OutOfBoundsId);
+            var resultNegative = controller.AdjustCost(NegativeId);
+
+            Assert.IsNotNull(resultOutOfBounds);
+            var objectResultOutOfBounds = resultOutOfBounds.Result.Result as NotFoundResult;
+            Assert.IsNotNull(objectResultOutOfBounds);
+
+            Assert.IsNotNull(resultNegative);
+            var objectResultNegative = resultNegative.Result.Result as NotFoundResult;
+            Assert.IsNotNull(objectResultNegative);
+        }
     }
 }
