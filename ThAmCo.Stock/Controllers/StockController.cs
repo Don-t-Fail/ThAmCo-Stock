@@ -249,7 +249,7 @@ namespace ThAmCo.Stock.Controllers
             if (url == null)
                 return NotFound();
 
-            response = await client.GetAsync(url + "/products");
+            response = await client.GetAsync(url + "product");
 
             if (response?.IsSuccessStatusCode == true)
             {
@@ -276,7 +276,7 @@ namespace ThAmCo.Stock.Controllers
 
             HttpResponseMessage response = null;
 
-            response = await client.GetAsync(url + "/products/" + id);
+            response = await client.GetAsync(url + "product/" + id);
 
             if (response?.IsSuccessStatusCode == true)
             {
@@ -291,9 +291,39 @@ namespace ThAmCo.Stock.Controllers
         [HttpPost]
         public async Task<ActionResult> OrderRequestSubmitted(int id, string supplier, int quantity)
         {
+            var orderRequest = new OrderRequest
+            {
+                Quantity = quantity,
+                SubmittedTime = DateTime.Now,
+                Approved = false,
+                ApprovedTime = null,
+                Deleted = false
+            };
+
             var client = GetHttpClient("StandardRequest");
-            //var result = await client.PostAsync("/api/Membership/exists", content);
-            return null;
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var url = GetURLForSupplier(supplier);
+            if (url == null)
+                return NotFound();
+
+            HttpResponseMessage response = null;
+
+            response = await client.GetAsync(url + "product/" + id);
+
+            if (response?.IsSuccessStatusCode == true)
+            {
+                var objectResult = await response.Content.ReadAsAsync<VendorProductDto>();
+                if (objectResult == null)
+                    return NotFound();
+                orderRequest.ProductId = objectResult.Id;
+                orderRequest.Price = objectResult.Price * quantity;
+
+                _context.AddOrderRequest(orderRequest);
+
+                return RedirectToAction(nameof(VendorProducts), new { supplier });
+            }
+            else return NotFound();
         }
 
         private bool ProductStockExists(int id)
