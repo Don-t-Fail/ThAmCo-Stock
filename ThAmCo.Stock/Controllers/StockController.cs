@@ -230,7 +230,7 @@ namespace ThAmCo.Stock.Controllers
 
             productStock.ProductStock.PriceId = price.Id;
             _context.UpdateProductStockAsync(productStock.ProductStock);
-            return Ok();
+            return Ok(productStock);
         }
 
         [HttpGet]
