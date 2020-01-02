@@ -292,7 +292,8 @@ namespace ThAmCo.Stock.Controllers
         public async Task<ActionResult> OrderRequestSubmitted(int id, string supplier, int quantity)
         {
             var client = GetHttpClient("StandardRequest");
-            var result = await client.PostAsync("/api/Membership/exists", content);
+            //var result = await client.PostAsync("/api/Membership/exists", content);
+            return null;
         }
 
         private bool ProductStockExists(int id)
