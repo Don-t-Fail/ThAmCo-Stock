@@ -332,9 +332,36 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> OrderRequestReview()
+        public async Task<ActionResult> OrderRequestReview(int id)
         {
+            var orderRequest = _context.GetOrderRequest(id).Result;
+            if (orderRequest == null)
+                return NotFound();
 
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var url = GetURLForSupplier("");
+            if (url == null)
+                return NotFound();
+
+            HttpResponseMessage response = null;
+
+            response = await client.GetAsync(url + "product/" + id);
+
+            if (response?.IsSuccessStatusCode == true)
+            {
+                var objectResult = await response.Content.ReadAsAsync<VendorProductDto>();
+                if (objectResult == null)
+                    return NotFound();
+                orderRequest.ProductId = objectResult.Id;
+                orderRequest.Price = objectResult.Price * orderRequest.Quantity;
+
+                _context.AddOrderRequest(orderRequest);
+
+                return null;//RedirectToAction(nameof(VendorProducts), new { supplier });
+            }
+            else return NotFound();
         }
 
         [HttpPost]
