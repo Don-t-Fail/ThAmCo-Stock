@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +54,19 @@ namespace ThAmCo.Stock.Tests.Controllers
         
         private const int OutOfBoundsId = 8;
         private const int NegativeId = -1;
+
+        private Mock<HttpMessageHandler> CreateHttpMock(HttpResponseMessage expected)
+        {
+            var mock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            mock.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(expected)
+                .Verifiable();
+            return mock;
+        }
         
         [TestMethod]
         public async Task GetAll_AllValid_AllReturned()
