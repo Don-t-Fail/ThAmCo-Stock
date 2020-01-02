@@ -4,11 +4,8 @@
     ViewData["Title"] = "Order Requests (" + Model.Count() + ")";
 }
 
-<h1>Index</h1>
+<h1>Order Requests</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -44,7 +41,7 @@
                 £@Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Approve</a>
+                <a asp-action="OrderRequestApproved" asp-route-id="@item.Id">Approve</a>
             </td>
         </tr>
         }
