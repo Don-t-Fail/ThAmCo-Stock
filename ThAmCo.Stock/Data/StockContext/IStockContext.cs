@@ -15,6 +15,7 @@ namespace ThAmCo.Stock.Data.StockContext
         Price AddPriceAsync(Price price);
         void AddOrderRequest(OrderRequest order);
         void UpdateProductStockAsync(ProductStock productStock);
+        void UpdateOrderRequest(OrderRequest orderRequest);
         void ApproveOrderRequest(int id);
         void SaveAndUpdateContext();
     }

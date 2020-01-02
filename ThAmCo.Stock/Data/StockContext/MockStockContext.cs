@@ -88,6 +88,13 @@ namespace ThAmCo.Stock.Data.StockContext
                 update.Id = productStock.Id;
         }
 
+        public void UpdateOrderRequest(OrderRequest orderRequest)
+        {
+            var update = _orderRequests.FirstOrDefault(or => or.Id == orderRequest.Id);
+            if (update != null)
+                update = orderRequest;
+        }
+
         public void ApproveOrderRequest(int id)
         {
             var approve = _orderRequests.FirstOrDefault(or => or.Id == id);

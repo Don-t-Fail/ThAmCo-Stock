@@ -81,6 +81,12 @@ namespace ThAmCo.Stock.Data.StockContext
             SaveAndUpdateContext();
         }
 
+        public void UpdateOrderRequest(OrderRequest orderRequest)
+        {
+            _context.Update(orderRequest);
+            _context.SaveChanges();
+        }
+
         public void ApproveOrderRequest(int id)
         {
             var productStock = GetOrderRequest(id).Result;
