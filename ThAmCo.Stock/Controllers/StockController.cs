@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ThAmCo.Stock.Data;
 using ThAmCo.Stock.Data.StockContext;
 using ThAmCo.Stock.Models.Dto;
@@ -293,6 +294,7 @@ namespace ThAmCo.Stock.Controllers
             var orderRequest = new OrderRequest
             {
                 Quantity = quantity,
+                Supplier = supplier,
                 SubmittedTime = DateTime.Now,
                 Approved = false,
                 ApprovedTime = null,
@@ -341,25 +343,38 @@ namespace ThAmCo.Stock.Controllers
             var client = GetHttpClient("StandardRequest");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
-            var url = GetURLForSupplier("");
+            var url = GetURLForSupplier(orderRequest.Supplier);
             if (url == null)
                 return NotFound();
 
             HttpResponseMessage response = null;
 
-            response = await client.GetAsync(url + "product/" + id);
+            response = await client.GetAsync(url + "product/" + orderRequest.ProductId);
 
             if (response?.IsSuccessStatusCode == true)
             {
                 var objectResult = await response.Content.ReadAsAsync<VendorProductDto>();
                 if (objectResult == null)
                     return NotFound();
-                orderRequest.ProductId = objectResult.Id;
-                orderRequest.Price = objectResult.Price * orderRequest.Quantity;
 
-                _context.AddOrderRequest(orderRequest);
+                //Update order details incase service changes prices.
+                if (orderRequest.Price != objectResult.Price * orderRequest.Quantity)
+                {
+                    orderRequest.Price = objectResult.Price * orderRequest.Quantity;
+                    _context.UpdateOrderRequest(orderRequest);
+                }
 
-                return null;//RedirectToAction(nameof(VendorProducts), new { supplier });
+                var reviewModel = new OrderRequestReviewModel
+                {
+                    Id = orderRequest.Id,
+                    Name = objectResult.Name,
+                    Description = objectResult.Description,
+                    Price = orderRequest.Price,
+                    Quantity = orderRequest.Quantity,
+                    Supplier = orderRequest.Supplier
+                };
+
+                return View(reviewModel);
             }
             else return NotFound();
         }
@@ -370,26 +385,21 @@ namespace ThAmCo.Stock.Controllers
             var orderRequest = _context.GetOrderRequest(id).Result;
             if (orderRequest == null)
                 return NotFound();
-            var orderDto = new ProductOrderDto
+            var orderDto = new ProductOrderPostDto
             {
-                Id = 1,
-                AccountName = "AccountName1",
-                CardNumber = "5",
+                AccountName = "sample string 1",
+                CardNumber = "sample string 2",
                 ProductId = orderRequest.ProductId,
-                Quantity = orderRequest.Quantity,
-                When = DateTime.Now,
-                ProductName = "Product1",
-                ProductEan = "ProductEan1",
-                TotalPrice = 4.5
+                Quantity = orderRequest.Quantity
             };
 
             var client = GetHttpClient("StandardRequest");
-            var result = await client.PostAsJsonAsync(GetURLForSupplier("undercutters") + "order", orderDto);
-            Console.WriteLine(await result.Content.ReadAsStringAsync());
+            var result = await client.PostAsJsonAsync(GetURLForSupplier(orderRequest.Supplier) + "order", orderDto);
             if (result.IsSuccessStatusCode)
             {
                 _context.ApproveOrderRequest(id);
-                return RedirectToAction(nameof(OrderRequests));
+                return Ok(result.Content);
+                //return RedirectToAction(nameof(OrderRequests));
             }
             return NotFound();
         }
