@@ -58,6 +58,14 @@ namespace ThAmCo.Stock.Tests.Controllers
                 new ProductStockDto { ProductStock = ProductStocks()[5], Price = Prices()[7] },
                 new ProductStockDto { ProductStock = ProductStocks()[6], Price = Prices()[8] }
             };
+
+            public static List<VendorProductDto> VendorProducts() => new List<VendorProductDto>
+            {
+                new VendorProductDto { Id = 1, Ean = "Sample Ean 1", CategoryId = 3, CategoryName = "Sample Category Name 1", BrandId = 5, BrandName = "Sample Brand Name 1", Name = "Sample Name 1", Description = "Sample Description 1", Price = 9.1, InStock = true, ExpectedRestock = null },
+                new VendorProductDto { Id = 2, Ean = "Sample Ean 2", CategoryId = 4, CategoryName = "Sample Category Name 2", BrandId = 6, BrandName = "Sample Brand Name 2", Name = "Sample Name 2", Description = "Sample Description 2", Price = 8.16, InStock = true, ExpectedRestock = null },
+                new VendorProductDto { Id = 3, Ean = "Sample Ean 3", CategoryId = 5, CategoryName = "Sample Category Name 3", BrandId = 7, BrandName = "Sample Brand Name 3", Name = "Sample Name 3", Description = "Sample Description 3", Price = 1.9, InStock = true, ExpectedRestock = null },
+                new VendorProductDto { Id = 4, Ean = "Sample Ean 4", CategoryId = 3, CategoryName = "Sample Category Name 4", BrandId = 5, BrandName = "Sample Brand Name 4", Name = "Sample Name 4", Description = "Sample Description 4", Price = 23.21, InStock = true, ExpectedRestock = null }
+            };
         }
         
         private const int OutOfBoundsId = 8;
@@ -488,6 +496,79 @@ namespace ThAmCo.Stock.Tests.Controllers
 
             Assert.IsNotNull(result);
             var objectResult = result as BadRequestResult;
+            Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task VendorProducts_ValidSupplierPassed_ReturnAllSupplierProducts()
+        {
+            var expectedHttpResponse = Data.VendorProducts();
+            var expectedJson = JsonConvert.SerializeObject(expectedHttpResponse);
+            var expectedResponse = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent(expectedJson,
+                                            Encoding.UTF8,
+                                            "application/json")
+            };
+            var httpClient = new HttpClient(CreateHttpMock(expectedResponse).Object);
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null) { HttpClient = httpClient };
+            const string supplier = "undercutters";
+
+            var expected = Data.VendorProducts();
+            var result = await controller.VendorProducts(supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as ViewResult;
+            Assert.IsNotNull(objectResult);
+            var viewResult = objectResult.Model as VendorProductIndexModel;
+            Assert.IsNotNull(viewResult);
+            var productsResult = viewResult.Products.ToList();
+            Assert.IsNotNull(productsResult);
+
+            Assert.AreEqual(expected.Count, productsResult.Count);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.AreEqual(expected[i].Id, productsResult[i].Id);
+                Assert.AreEqual(expected[i].BrandId, productsResult[i].BrandId);
+                Assert.AreEqual(expected[i].BrandName, productsResult[i].BrandName);
+                Assert.AreEqual(expected[i].CategoryId, productsResult[i].CategoryId);
+                Assert.AreEqual(expected[i].CategoryName, productsResult[i].CategoryName);
+                Assert.AreEqual(expected[i].Description, productsResult[i].Description);
+                Assert.AreEqual(expected[i].Ean, productsResult[i].Ean);
+                Assert.AreEqual(expected[i].ExpectedRestock, productsResult[i].ExpectedRestock);
+                Assert.AreEqual(expected[i].InStock, productsResult[i].InStock);
+                Assert.AreEqual(expected[i].Name, productsResult[i].Name);
+                Assert.AreEqual(expected[i].Price, productsResult[i].Price);
+            }
+        }
+
+        [TestMethod]
+        public async Task VendorProducts_NullSupplierPassed_ReturnNotFound()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const string supplier = null;
+
+            var result = await controller.VendorProducts(supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task VendorProducts_EmtpySupplierPassed_ReturnNotFound()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const string supplier = "";
+
+            var result = await controller.VendorProducts(supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as NotFoundResult;
             Assert.IsNotNull(objectResult);
         }
     }

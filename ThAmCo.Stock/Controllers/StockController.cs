@@ -242,14 +242,15 @@ namespace ThAmCo.Stock.Controllers
             {
                 Vendor = supplier
             };
-            var client = GetHttpClient("StandardRequest");
-            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
             HttpResponseMessage response = null;
 
             var url = GetURLForSupplier(supplier);
             if (url == null)
                 return NotFound();
+
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
             response = await client.GetAsync(url + "product");
 
