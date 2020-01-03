@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -497,6 +497,51 @@ namespace ThAmCo.Stock.Tests.Controllers
             Assert.IsNotNull(result);
             var objectResult = result as BadRequestResult;
             Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task VendorProducts_ValidSupplierPassed_ReturnAllSupplierProducts()
+        {
+            var expectedHttpResponse = Data.VendorProducts();
+            var expectedJson = JsonConvert.SerializeObject(expectedHttpResponse);
+            var expectedResponse = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent(expectedJson,
+                                            Encoding.UTF8,
+                                            "application/json")
+            };
+            var httpClient = new HttpClient(CreateHttpMock(expectedResponse).Object);
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null) { HttpClient = httpClient };
+            const string supplier = "undercutters";
+
+            var expected = Data.VendorProducts();
+            var result = await controller.VendorProducts(supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as ViewResult;
+            Assert.IsNotNull(objectResult);
+            var viewResult = objectResult.Model as VendorProductIndexModel;
+            Assert.IsNotNull(viewResult);
+            var productsResult = viewResult.Products.ToList();
+            Assert.IsNotNull(productsResult);
+
+            Assert.AreEqual(expected.Count, productsResult.Count);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.AreEqual(expected[i].Id, productsResult[i].Id);
+                Assert.AreEqual(expected[i].BrandId, productsResult[i].BrandId);
+                Assert.AreEqual(expected[i].BrandName, productsResult[i].BrandName);
+                Assert.AreEqual(expected[i].CategoryId, productsResult[i].CategoryId);
+                Assert.AreEqual(expected[i].CategoryName, productsResult[i].CategoryName);
+                Assert.AreEqual(expected[i].Description, productsResult[i].Description);
+                Assert.AreEqual(expected[i].Ean, productsResult[i].Ean);
+                Assert.AreEqual(expected[i].ExpectedRestock, productsResult[i].ExpectedRestock);
+                Assert.AreEqual(expected[i].InStock, productsResult[i].InStock);
+                Assert.AreEqual(expected[i].Name, productsResult[i].Name);
+                Assert.AreEqual(expected[i].Price, productsResult[i].Price);
+            }
         }
     }
 }
