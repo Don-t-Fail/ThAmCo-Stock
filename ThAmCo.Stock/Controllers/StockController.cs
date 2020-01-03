@@ -225,6 +225,8 @@ namespace ThAmCo.Stock.Controllers
 
             if (productStock == null)
                 return NotFound();
+            if (cost <= 0)
+                return BadRequest();
 
             var price = _context.AddPriceAsync(new Price { ProductPrice = cost, ProductStockId = id, Date = DateTime.Now });
 
