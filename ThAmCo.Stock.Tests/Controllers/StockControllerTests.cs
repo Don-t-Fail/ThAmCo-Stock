@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +57,14 @@ namespace ThAmCo.Stock.Tests.Controllers
                 new ProductStockDto { ProductStock = ProductStocks()[4], Price = Prices()[6] },
                 new ProductStockDto { ProductStock = ProductStocks()[5], Price = Prices()[7] },
                 new ProductStockDto { ProductStock = ProductStocks()[6], Price = Prices()[8] }
+            };
+
+            public static List<VendorProductDto> VendorProducts() => new List<VendorProductDto>
+            {
+                new VendorProductDto { Id = 1, Ean = "Sample Ean 1", CategoryId = 3, CategoryName = "Sample Category Name 1", BrandId = 5, BrandName = "Sample Brand Name 1", Name = "Sample Name 1", Description = "Sample Description 1", Price = 9.1, InStock = true, ExpectedRestock = DateTime.Now },
+                new VendorProductDto { Id = 2, Ean = "Sample Ean 2", CategoryId = 4, CategoryName = "Sample Category Name 2", BrandId = 6, BrandName = "Sample Brand Name 2", Name = "Sample Name 2", Description = "Sample Description 2", Price = 8.16, InStock = true, ExpectedRestock = DateTime.Now },
+                new VendorProductDto { Id = 3, Ean = "Sample Ean 3", CategoryId = 5, CategoryName = "Sample Category Name 3", BrandId = 7, BrandName = "Sample Brand Name 3", Name = "Sample Name 3", Description = "Sample Description 3", Price = 1.9, InStock = true, ExpectedRestock = DateTime.Now },
+                new VendorProductDto { Id = 4, Ean = "Sample Ean 4", CategoryId = 3, CategoryName = "Sample Category Name 4", BrandId = 5, BrandName = "Sample Brand Name 4", Name = "Sample Name 4", Description = "Sample Description 4", Price = 23.21, InStock = true, ExpectedRestock = DateTime.Now }
             };
         }
         
