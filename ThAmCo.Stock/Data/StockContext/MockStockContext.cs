@@ -71,7 +71,7 @@ namespace ThAmCo.Stock.Data.StockContext
 
         public Price AddPriceAsync(Price price)
         {
-            price.Id = _prices.OrderByDescending(p => p.Id).First().Id;
+            price.Id = _prices.OrderByDescending(p => p.Id).First().Id + 1;
             _prices.Add(price);
             return price;
         }
