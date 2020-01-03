@@ -278,7 +278,6 @@ namespace ThAmCo.Stock.Controllers
             if (url == null)
                 return NotFound();
 
-
             var client = GetHttpClient("StandardRequest");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
