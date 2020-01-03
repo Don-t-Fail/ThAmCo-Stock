@@ -460,5 +460,35 @@ namespace ThAmCo.Stock.Tests.Controllers
             var objectResultNegative = resultNegative as NotFoundResult;
             Assert.IsNotNull(objectResultNegative);
         }
+
+        [TestMethod]
+        public async Task POSTAdjustCost_NegativeCostPassed_ReturnBadRequest()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const int id = 2;
+            const double price = -4.32;
+
+            var result = await controller.AdjustCost(id, price);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as BadRequestResult;
+            Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task POSTAdjustCost_ZeroCostPassed_ReturnBadRequest()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const int id = 2;
+            const double price = 0;
+
+            var result = await controller.AdjustCost(id, price);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as BadRequestResult;
+            Assert.IsNotNull(objectResult);
+        }
     }
 }
