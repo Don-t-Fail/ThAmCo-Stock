@@ -15,6 +15,7 @@ using System.Threading;
 using Newtonsoft.Json;
 using System.Text;
 using ThAmCo.Stock.Models.ViewModel;
+using System;
 
 namespace ThAmCo.Stock.Tests.Controllers
 {
@@ -399,20 +400,64 @@ namespace ThAmCo.Stock.Tests.Controllers
         }
 
         [TestMethod]
-        public void GETAdjustCost_InvalidIdPassed_NotFoundReturned()
+        public async Task GETAdjustCost_InvalidIdPassed_NotFoundReturned()
         {
             var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
             var controller = new StockController(context, null);
 
-            var resultOutOfBounds = controller.AdjustCost(OutOfBoundsId);
-            var resultNegative = controller.AdjustCost(NegativeId);
+            var resultOutOfBounds = await controller.AdjustCost(OutOfBoundsId);
+            var resultNegative = await controller.AdjustCost(NegativeId);
 
             Assert.IsNotNull(resultOutOfBounds);
-            var objectResultOutOfBounds = resultOutOfBounds.Result.Result as NotFoundResult;
+            var objectResultOutOfBounds = resultOutOfBounds.Result as NotFoundResult;
             Assert.IsNotNull(objectResultOutOfBounds);
 
             Assert.IsNotNull(resultNegative);
-            var objectResultNegative = resultNegative.Result.Result as NotFoundResult;
+            var objectResultNegative = resultNegative.Result as NotFoundResult;
+            Assert.IsNotNull(objectResultNegative);
+        }
+
+        [TestMethod]
+        public async Task POSTAdjustCost_ValidIdAndCostPassed_PriceAddedToDatabaseAndPricePointerChanged()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const int id = 2;
+            const double price = 4.32;
+
+            var previous = Data.ProductStockDtos().FirstOrDefault(ps => ps.ProductStock.Id == id);
+            var expected = previous;
+            expected.Price = new Price { Id = 10, ProductPrice = price, ProductStockId = expected.ProductStock.Id };
+            expected.ProductStock.PriceId = 10;
+            var result = await controller.AdjustCost(id, price);
+            var after = await context.GetProductStockAsync(id);
+
+            Assert.IsNotNull(result);
+            var okResult = result as OkResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(previous.ProductStock.Id, after.ProductStock.Id); //Just check Id to make sure the correct product is returned.
+            Assert.AreEqual(expected.Price.Id, after.Price.Id);
+            Assert.AreEqual(expected.Price.ProductPrice, after.Price.ProductPrice);
+            Assert.AreEqual(expected.Price.ProductStockId, after.Price.ProductStockId);
+            Assert.AreEqual(expected.ProductStock.PriceId, after.ProductStock.PriceId);
+        }
+
+        [TestMethod]
+        public async Task POSTAdjustCost_OutOfBoundsAndNegativeIdPassed_ReturnNotFound()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const double price = 4.32;
+
+            var resultOutOfBounds = await controller.AdjustCost(OutOfBoundsId, price);
+            var resultNegative = await controller.AdjustCost(NegativeId, price);
+
+            Assert.IsNotNull(resultOutOfBounds);
+            var objectResultOutOfBounds = resultOutOfBounds as NotFoundResult;
+            Assert.IsNotNull(objectResultOutOfBounds);
+
+            Assert.IsNotNull(resultNegative);
+            var objectResultNegative = resultNegative as NotFoundResult;
             Assert.IsNotNull(objectResultNegative);
         }
     }
