@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -270,22 +271,28 @@ namespace ThAmCo.Stock.Controllers
         [HttpGet]
         public async Task<ActionResult> OrderRequest(int id, string supplier)
         {
-            var client = GetHttpClient("StandardRequest");
-            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+            if (id <= 0)
+                return NotFound();
 
             var url = GetURLForSupplier(supplier);
             if (url == null)
                 return NotFound();
 
-            HttpResponseMessage response = null;
+            var client = GetHttpClient("StandardRequest");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
+            HttpResponseMessage response = null;
             response = await client.GetAsync(url + "product/" + id);
 
             if (response?.IsSuccessStatusCode == true)
             {
                 var objectResult = await response.Content.ReadAsAsync<VendorProductDto>();
+
                 if (objectResult == null)
                     return NotFound();
+                if (objectResult.Id != id)
+                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+
                 return View(new OrderRequestModel { Id = id, Name = objectResult.Name, Description = objectResult.Description, Supplier = supplier });
             }
             else return NotFound();

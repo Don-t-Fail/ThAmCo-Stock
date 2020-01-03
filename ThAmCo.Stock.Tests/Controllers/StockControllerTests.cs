@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using System.Text;
 using ThAmCo.Stock.Models.ViewModel;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace ThAmCo.Stock.Tests.Controllers
 {
@@ -566,6 +567,131 @@ namespace ThAmCo.Stock.Tests.Controllers
             const string supplier = "";
 
             var result = await controller.VendorProducts(supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
+        
+        [TestMethod]
+        public async Task OrderRequest_ValidIdAndSupplierPassed_ReturnCorrectAndValidModel()
+        {
+            const int id = 2;
+            const string supplier = "undercutters";
+            var expectedHttpResponse = Data.VendorProducts().FirstOrDefault(vp => vp.Id == id);
+            var expectedJson = JsonConvert.SerializeObject(expectedHttpResponse);
+            var expectedResponse = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent(expectedJson,
+                                            Encoding.UTF8,
+                                            "application/json")
+            };
+            var httpClient = new HttpClient(CreateHttpMock(expectedResponse).Object);
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null) { HttpClient = httpClient };
+
+            var expected = expectedHttpResponse;
+            var result = await controller.OrderRequest(id, supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as ViewResult;
+            Assert.IsNotNull(objectResult);
+            var viewResult = objectResult.Model as OrderRequestModel;
+            Assert.IsNotNull(viewResult);
+
+            Assert.AreEqual(id, viewResult.Id);
+            Assert.AreEqual(expected.Name, viewResult.Name);
+            Assert.AreEqual(expected.Id, viewResult.Id);
+            Assert.AreEqual(supplier, viewResult.Supplier);
+            Assert.AreEqual(expected.Description, viewResult.Description);
+        }
+
+        [TestMethod]
+        public async Task OrderRequest_IncorrectProductReturned_ReturnInternalServerError()
+        {
+            const int id = 2;
+            const string supplier = "undercutters";
+            var expectedHttpResponse = Data.VendorProducts().FirstOrDefault(vp => vp.Id == id + 1);
+            var expectedJson = JsonConvert.SerializeObject(expectedHttpResponse);
+            var expectedResponse = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent(expectedJson,
+                                            Encoding.UTF8,
+                                            "application/json")
+            };
+            var httpClient = new HttpClient(CreateHttpMock(expectedResponse).Object);
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null) { HttpClient = httpClient };
+
+            var result = await controller.OrderRequest(id, supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as StatusCodeResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(objectResult.StatusCode, StatusCodes.Status500InternalServerError);
+        }
+
+        [TestMethod]
+        public async Task OrderRequest_EmtpySupplierPassed_ReturnNotFound()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const int id = 2;
+            const string supplier = "";
+
+            var result = await controller.OrderRequest(id, supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task OrderRequest_ZeroIdPassed_ReturnNotFound()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const int id = 0;
+            const string supplier = "undercutters";
+
+            var result = await controller.OrderRequest(id, supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task OrderRequest_NegativeIdPassed_ReturnNotFound()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const int id = NegativeId;
+            const string supplier = "undercutters";
+
+            var result = await controller.OrderRequest(id, supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task OrderRequest_OutOfBoundsIdPassed_ReturnNotFound()
+        {
+            const int id = 10000;
+            const string supplier = "undercutters";
+            var expectedResponse = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.NotFound
+            };
+            var httpClient = new HttpClient(CreateHttpMock(expectedResponse).Object);
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null) { HttpClient = httpClient };
+
+            var result = await controller.OrderRequest(id, supplier);
 
             Assert.IsNotNull(result);
             var objectResult = result as NotFoundResult;
