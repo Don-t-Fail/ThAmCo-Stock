@@ -543,5 +543,33 @@ namespace ThAmCo.Stock.Tests.Controllers
                 Assert.AreEqual(expected[i].Price, productsResult[i].Price);
             }
         }
+
+        [TestMethod]
+        public async Task VendorProducts_NullSupplierPassed_ReturnNotFound()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const string supplier = null;
+
+            var result = await controller.VendorProducts(supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
+
+        [TestMethod]
+        public async Task VendorProducts_EmtpySupplierPassed_ReturnNotFound()
+        {
+            var context = new MockStockContext(Data.ProductStocks(), Data.Prices(), null);
+            var controller = new StockController(context, null);
+            const string supplier = "";
+
+            var result = await controller.VendorProducts(supplier);
+
+            Assert.IsNotNull(result);
+            var objectResult = result as NotFoundResult;
+            Assert.IsNotNull(objectResult);
+        }
     }
 }
