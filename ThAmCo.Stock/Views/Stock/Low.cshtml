@@ -1,7 +1,7 @@
-﻿@model IEnumerable<ThAmCo.Stock.Data.ProductStock>
+﻿@model IEnumerable<ThAmCo.Stock.Models.Dto.ProductStockDto>
 
 @{
-    ViewData["Title"] = "Low Stock";
+    ViewData["Title"] = "Low Stock Products";
 }
 
 <h1>Products with Low Stock</h1>
@@ -10,34 +10,45 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().ProductId)
+                
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().PriceId)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().ProductStock.ProductId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Stock)
+                Sale Price
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().ProductStock.Stock)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
+        @{ int i = 1; }
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PriceId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Stock)
-                </td>
-                <td>
-                    <button type="button" class="btn btn-success">Order</button>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => i)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductStock.ProductId)
+            </td>
+            <td>
+                £@Html.DisplayFor(modelItem => item.Price.ProductPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductStock.Stock)
+            </td>
+            <td>
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="@item.ProductStock.ProductId" />
+                    <input type="submit" value="Order" class="btn btn-primary" />
+                </form>
+            </td>
+        </tr>
+        @Html.Display(i++.ToString())
         }
     </tbody>
 </table>
