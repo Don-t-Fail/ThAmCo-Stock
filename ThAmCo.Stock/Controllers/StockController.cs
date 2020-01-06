@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -414,7 +415,13 @@ namespace ThAmCo.Stock.Controllers
             return NotFound();
         }
 
-            private bool ProductStockExists(int id)
+        [Authorize]
+        public async Task<IActionResult> Authed()
+        {
+            return Ok("Authed");
+        }
+
+        private bool ProductStockExists(int id)
         {
             return _context.GetAll().Result.Any(e => e.ProductStock.Id == id);
         }
