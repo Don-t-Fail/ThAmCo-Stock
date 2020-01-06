@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -42,6 +45,17 @@ namespace ThAmCo.Stock
                     optionsBuilder.EnableRetryOnFailure(3, TimeSpan.FromSeconds(10), null)
             ));
 
+            services.AddAuthentication("Cookies")
+                    .AddCookie("Cookies");
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("StaffOnly", builder =>
+                {
+                    builder.RequireClaim("role", "Staff");
+                });
+            });
+
             services.AddHttpClient("StandardRequest")
                 .AddTransientHttpErrorPolicy(p =>
                     p.OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -65,6 +79,8 @@ namespace ThAmCo.Stock
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
