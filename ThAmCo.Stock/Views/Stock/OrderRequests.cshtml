@@ -1,0 +1,49 @@
+﻿@model IEnumerable<ThAmCo.Stock.Data.OrderRequest>
+
+@{
+    ViewData["Title"] = "Order Requests (" + Model.Count() + ")";
+}
+
+<h1>Order Requests</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().ProductId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().SubmittedTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubmittedTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                £@Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                <a asp-action="OrderRequestReview" asp-route-id="@item.Id">Review</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

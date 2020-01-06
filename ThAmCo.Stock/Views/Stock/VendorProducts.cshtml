@@ -1,0 +1,91 @@
+﻿@model ThAmCo.Stock.Models.ViewModel.VendorProductIndexModel
+
+@{
+    ViewData["Title"] = "Vendor Product Index";
+}
+
+<h1>Index</h1>
+
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" class="form-control" asp-for="Name" />
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <input type="text" class="form-control" asp-for="Description" />
+    </div>
+    <div class="form-group">
+        <label>Brand</label>
+        <select asp-for="BrandId" class="form-control" asp-items="ViewBag.BrandList"></select>
+    </div>
+    <div class="form-group">
+        <label>Category</label>
+        <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryList"></select>
+    </div>
+    <div class="form-group">
+        <label>Lowest Price</label>
+        <input type="number" min="0" step="0.01" asp-for="PriceLow" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Highest Price</label>
+        <input type="number" min="0" step="0.01" asp-for="PriceHigh" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-default" />
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().BrandName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().CategoryName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products.FirstOrDefault().InStock)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Products)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BrandName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+                <td>
+                    <a asp-action="OrderRequest" asp-route-id="@item.Id" asp-route-supplier="@Model.Vendor">Order</a>
+                </td>
+
+
+
+</tr>
+        }
+    </tbody>
+</table>

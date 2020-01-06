@@ -7,8 +7,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
+using ThAmCo.Stock.Data;
+using ThAmCo.Stock.Data.StockContext;
 
 namespace ThAmCo.Stock
 {
@@ -31,8 +35,21 @@ namespace ThAmCo.Stock
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddDbContext<StockDbContext>(options => options.UseSqlServer(
+                Configuration.GetConnectionString("ProductsSqlConnection"), optionsBuilder =>
+                    optionsBuilder.EnableRetryOnFailure(3, TimeSpan.FromSeconds(10), null)
+            ));
+
+            services.AddHttpClient("StandardRequest")
+                .AddTransientHttpErrorPolicy(p =>
+                    p.OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+                .AddTransientHttpErrorPolicy(p =>
+                    p.CircuitBreakerAsync(5, TimeSpan.FromSeconds(30)));
+
+            services.AddScoped<IStockContext, StockContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

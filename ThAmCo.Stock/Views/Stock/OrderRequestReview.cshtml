@@ -1,0 +1,32 @@
+﻿@model ThAmCo.Stock.Models.ViewModel.OrderRequestReviewModel
+
+@{
+    ViewData["Title"] = "Order Request Review";
+}
+
+<h1>Review Order Request from: @(Model.Supplier)</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        @Html.LabelFor(m => m.Name) :
+        @Html.DisplayFor(m => m.Name)
+        <br />
+        @Html.LabelFor(m => m.Description) :
+        @Html.DisplayFor(m => m.Description)
+        <br />
+        @Html.LabelFor(m => m.Supplier) :
+        @Html.DisplayFor(m => m.Supplier)
+        <br />
+        @Html.LabelFor(m => m.Quantity) :
+        @Html.DisplayFor(m => m.Quantity)
+        <br />
+        @Html.LabelFor(m => m.Price) :
+        £@Html.DisplayFor(m => m.Price)
+        <form asp-action="OrderRequestApproved">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <input type="submit" value="Approve Order" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

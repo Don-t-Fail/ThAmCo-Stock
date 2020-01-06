@@ -1,0 +1,30 @@
+﻿@model ThAmCo.Stock.Models.ViewModel.AdjustCostViewModel
+
+@{
+    ViewData["Title"] = "Adjust Cost";
+}
+
+<h1>Adjust Cost</h1>
+
+<h4>Cost</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        @Html.LabelFor(m => m.Name) : 
+        @Html.DisplayFor(m => m.Name)
+        <br />
+        @Html.LabelFor(m => m.Description) : 
+        @Html.DisplayFor(m => m.Description)
+        <form asp-action="AdjustCost">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Cost" class="control-label"></label>
+                <input asp-for="Cost" class="form-control" />
+                <span asp-validation-for="Cost" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Adjust" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
