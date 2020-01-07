@@ -9,9 +9,9 @@ using ThAmCo.Stock.Models;
 
 namespace ThAmCo.Stock.Controllers
 {
+    [Authorize(Policy = "StaffOnly")]
     public class HomeController : Controller
     {
-        [Authorize]
         public IActionResult Index()
         {
             return View();

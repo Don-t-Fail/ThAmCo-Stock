@@ -42,7 +42,7 @@
                 @Html.DisplayFor(modelItem => item.ProductStock.Stock)
             </td>
             <td>
-                <form asp-action="Delete">
+                <form asp-action="VendorProducts">
                     <input type="hidden" asp-for="@item.ProductStock.ProductId" />
                     <input type="submit" value="Order" class="btn btn-primary" />
                 </form>
