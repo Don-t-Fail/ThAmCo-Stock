@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using ThAmCo.Stock.Models.ViewModel;
 
 namespace ThAmCo.Stock.Controllers
 {
+    [Authorize(Policy = "StaffOnly")]
     public class StockController : Controller
     {
         private readonly IStockContext _context;
@@ -33,6 +35,7 @@ namespace ThAmCo.Stock.Controllers
             return View(_context.GetAll().Result.ToList());
         }
 
+        [AllowAnonymous]
         // GET: Stock/Details/5
         public async Task<ActionResult<ProductStockDetailsDto>> Details(int id)
         {
@@ -151,6 +154,7 @@ namespace ThAmCo.Stock.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ProductStockDto>>> ProductStocks()
         {
             return Ok(await _context.GetAll());
@@ -269,7 +273,7 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> OrderRequest(int id, string supplier)
+        public async Task<ActionResult> OrderRequest(int id, string supplier = null)
         {
             if (id <= 0)
                 return NotFound();
@@ -414,7 +418,7 @@ namespace ThAmCo.Stock.Controllers
             return NotFound();
         }
 
-            private bool ProductStockExists(int id)
+        private bool ProductStockExists(int id)
         {
             return _context.GetAll().Result.Any(e => e.ProductStock.Id == id);
         }
