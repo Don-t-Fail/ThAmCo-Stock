@@ -31,3 +31,35 @@ To run all the tests in the project, use
 Or use the test suite within Visual Studio or Rider.
 ### Mocks
 Mock data contexts are included as an interface; and are generally created with simple lists (LINQ makes this simple, as data contexts are treated like lists). Mock HTTP clients are formed using the Moq package.
+
+# Assignment Checklist
+## System Architecture 
+### Original Architecture Diagram with Feedback
+
+### Updated Architecture Diagram with Comments
+
+### Solo Development Plan
+
+### Peer Point Distribution
+
+## System Implementation
+### Security Topics
+
+### Data Distribution
+
+### Network Resilience
+
+### Tools and Frameworks
+
+### Unit Testing
+
+### Test Doubles
+
+### Configuring Deployment
+
+### Deployment Video
+
+## System Demonstration
+### Component Demonstration
+
+### Peer Point Distribution
