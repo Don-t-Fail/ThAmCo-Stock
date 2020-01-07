@@ -77,7 +77,7 @@ namespace ThAmCo.Stock.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("Cookies");
-            return Ok("Signed Out");
+            return LocalRedirect("/");
         }
 
         [Authorize]

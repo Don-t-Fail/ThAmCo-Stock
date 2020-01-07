@@ -15,6 +15,7 @@ using ThAmCo.Stock.Models.ViewModel;
 
 namespace ThAmCo.Stock.Controllers
 {
+    [Authorize(Policy = "StaffOnly")]
     public class StockController : Controller
     {
         private readonly IStockContext _context;
@@ -34,6 +35,7 @@ namespace ThAmCo.Stock.Controllers
             return View(_context.GetAll().Result.ToList());
         }
 
+        [AllowAnonymous]
         // GET: Stock/Details/5
         public async Task<ActionResult<ProductStockDetailsDto>> Details(int id)
         {
@@ -152,6 +154,7 @@ namespace ThAmCo.Stock.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ProductStockDto>>> ProductStocks()
         {
             return Ok(await _context.GetAll());
@@ -270,7 +273,7 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> OrderRequest(int id, string supplier)
+        public async Task<ActionResult> OrderRequest(int id, string supplier = null)
         {
             if (id <= 0)
                 return NotFound();
@@ -413,12 +416,6 @@ namespace ThAmCo.Stock.Controllers
                 //return RedirectToAction(nameof(OrderRequests));
             }
             return NotFound();
-        }
-
-        [Authorize]
-        public async Task<IActionResult> Authed()
-        {
-            return Ok("Authed");
         }
 
         private bool ProductStockExists(int id)
