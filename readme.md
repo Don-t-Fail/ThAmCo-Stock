@@ -15,11 +15,6 @@ The main branch is `Master`, and should only be committed to/pushed to when the 
 
 # Assignment Checklist
 ## System Architecture 
-### Original Architecture Diagram with Feedback
-
-### Updated Architecture Diagram with Comments
-
-### Solo Development Plan
 
 ### Peer Point Distribution
 Dylan: 7  
@@ -27,13 +22,13 @@ Steven: 6
 
 ## System Implementation
 ### Security Topics
-Due to no central Login/Accounts for the project, please view the Accounts controller in `Controllers/AccountController.cs` as this is where authentication takes place within this service.
+Due to no central Login/Accounts for the project, please view the Accounts controller in `Controllers/AccountController.cs` as this is where authentication takes place within this service. For this service, most functions have a requirement that staff authentication is required. This is because this service (particularly the views) will be used by mainly staff, and regular customers should not have access to these. You can see authentication cookies within `Startup.cs` along with the function tag `[Authorize]` with a policy of `(Policy = "StaffOnly")`, meaning only people with the staff role can gain access to the endpoint/view.
 
 ### Data Distribution
 Data Distribution within this project mainly relies on making HTTP requests. Little information is duplicated across services (particularly saved to databases) to try to make data as up to date as possible. Due to this, pages may take a little longer to load (or fail to load), however these would generally occur for Staff and Admin pages, as customer pages are optimised to display as much data as they can; loading pages without some elements (like reviews).
 
 ### Network Resilience
-For network resilience, `Polly` is used for creating a HTTPClient factory as a service in the project. There are two client builders defined within `Startup.cs`, these two being `StandardRequest` and `ReviewRequest`. These contain different properties, `StandardRequest` deals with most of the backend requests that aren't too reliant of customer pages. The main requests sent from the customer pages are retrieving `Reviews` and `Stock`, if these services are unable to be reached after the first try, product data will be displayed without this extra data. This allows for products to still be viewed, with only slight delays to page loading times. These HTTPFactories can be seen at `lines 43-54`, the two containing different http request rules.
+For network resilience, `Polly` is used for creating a HTTPClient factory as a service in the project. There is only one client builder defined within `Startup.cs`, being `StandardRequest`. This contains certain properties, `StandardRequest` deals with most of the backend requests that aren't too reliant of customer pages. The main requests sent from the customer pages are retrieving `Third Party APIs` and `Products`, if these services are unable to be reached after the third try, product data will be displayed without this extra data. This makes sure all data retrieved is live and accurate.
 
 ### Tools and Frameworks
 Multiple tools and frameworks are used within this project. These are listed below.
@@ -52,8 +47,8 @@ Multiple tools and frameworks are used within this project. These are listed bel
 * Visual Studio Test Tools (Microsoft.VisualStudio.TestTools.UnitTesting). Testing can be run by going to the root directory of this project and using
 >dotnet test  
 
-* Moq is used for a HttpClient mock. This can be seen in `ThAmCo.Products.Tests/Controllers/ProductsControllerTests.cs lines 68-79`. These get given data depending on the test, as can be seen at the start of the test `GetProductIndex_AllValid_AllReturned() lines 84-104`.
-* Test doubles (test data) are available within the test cs file (`ThAmCo.Products.Tests/Controllers/ProductsControllerTests.cs`), and are inside of their own `Data` class. These are located at the start of the file, in `lines 25-66`. These were then used within the `ThAmCo.Products/Data/ProductsContext/MockProductsContext.cs` to act as the context fake.
+* Moq is used for a HttpClient mock. This can be seen in `ThAmCo.Stock.Tests/Controllers/StockControllerTests.cs lines 75-85`. These get given data depending on the test, as can be seen at the start of the test `VendorProducts_ValidSupplierPassed_ReturnAllSupplierProducts() lines 506-518`.
+* Test doubles (test data) are available within the test cs file (`ThAmCo.Stock.Tests/Controllers/StockControllerTests.cs`), and are inside of their own `Data` class. These are located at the start of the file, in `lines 26-71`. These were then used within the `ThAmCo.Stock/Data/StockContext/MockStockContext.cs` to act as the context fake.
 * ARC (Advanced REST Client) and Postman were used to test API endpoints within this project. They were useful to test endpoints within my own services, along with creating the DTOs required for retrieving data from other services.
 
 #### Continuous Integration
@@ -62,18 +57,15 @@ Multiple tools and frameworks are used within this project. These are listed bel
 
 ### Configuring Deployment
 * A `Dockerfile` is included within this repo as a means of deploying this service. This `Dockerfile` is configured to be used with the produced artefact from Azure Pipelines, and has not been designed to be used for debugging, building, or run directly inside of the repo. To deploy the docker image, please follow these instructions:
->Take produced artefact from Azure Pipelines (ThAmCo-Products.zip)  
-Extract to a folder called Products  
-Place Dockerfile one up from the Product directory  
-docker build thamco-products .  
+>Take produced artefact from Azure Pipelines (ThAmCo-Stock.zip)  
+Extract to a folder called stock  
+Place Dockerfile one up from the stock directory  
+docker build thamco-stock .  
 
 This should produce a docker image that can then be launched.  
 `Docker-compose` would also be used when all services are available with their dockerfile. This would be the ideal way of deploying all services at once, along with their database.
 
-### Deployment Video
-
 ## System Demonstration
-### Component Demonstration
 
 ### Peer Point Distribution
 Steven: 7  
