@@ -270,7 +270,7 @@ namespace ThAmCo.Stock.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> OrderRequest(int id, string supplier)
+        public async Task<ActionResult> OrderRequest(int id, string supplier = null)
         {
             if (id <= 0)
                 return NotFound();
